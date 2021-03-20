@@ -1,5 +1,8 @@
 from tkinter import ttk
 from tkinter import *
+from xml.dom import minidom
+import xml.etree.ElementTree as ET 
+
 
 class Principal:
 
@@ -7,18 +10,179 @@ class Principal:
         self.vent = ventana
         self.vent.title('Proyecto 2')
         
-        #contenedor
-        pantalla = LabelFrame(self.vent,text='Cargar Arhivo')
-        pantalla.grid(row=0,column=0,columnspan=3,pady=20)
+        #panel1 cargar archivo
+        panel1 = LabelFrame(self.vent,text='Cargar Arhivo')
+        panel1.grid(row=0,column=0,columnspan=3)
 
-        #Input cargar archivo
-        Label(pantalla,text='Ingrese la ruta del archivo').grid(row=1,column=1)
-        self.ruta=Entry(pantalla)
-        self.ruta.grid(row=1,column=2)
+        #panel2 operaciones Una imagen
+        panel2 = LabelFrame(self.vent,text='Operaciones para una imagen')
+        panel2.grid(row=2,column=0 ,pady=20,columnspan=3)
 
-        #Boton cargar archivo
-        ttk.Button(pantalla, text="Cargar").grid(row=4,columnspan=5)
+        #panel3 operaciones con dos imagenes
+        panel3 = LabelFrame(self.vent,text='Operaciones con dos iamgenes imagen')
+        panel3.grid(row=4,column=0 ,pady=20,columnspan=3)
 
+        #panel4 tablas
+        panel4 = LabelFrame(self.vent,text='')
+        panel4.grid(row=2,column=5 ,pady=20,columnspan=3)
+
+        #botones radiales //panel 3
+        opcion_radioboton2=IntVar()
+        Radiobutton(panel3,text="Union",variable=opcion_radioboton2, value=1).grid(column=0, row=1, sticky="W")
+        Radiobutton(panel3,text="Intersección",variable=opcion_radioboton2, value=2).grid(column=0, row=2, sticky="W")
+        Radiobutton(panel3,text="Diferencia",variable=opcion_radioboton2, value=3).grid(column=0, row=3, sticky="W")
+        Radiobutton(panel3,text="Diferencia simétrica",variable=opcion_radioboton2, value=4).grid(column=0, row=4, sticky="W")
+
+        #Boton opciones de dos imagenes //Panel 3
+        ttk.Button(panel3, text="Continuar").grid(row=5,columnspan=2)
+
+        #Input operaciones de dos imagenes //panel3
+        Label(panel3,text='Ingrese el nombre de la matriz 1').grid(row=1,column=6)
+        self.op2_matriz1=Entry(panel3)
+        self.op2_matriz1.grid(row=2,column=6)
+        Label(panel3,text='Ingrese el nombre de la matriz 2').grid(row=3,column=6)
+        self.op2_matriz2=Entry(panel3)
+        self.op2_matriz2.grid(row=4,column=6)
+
+
+        #botones radiales opcion de una imagen //panel 2
+        opcion_radioboton=IntVar()
+        Radiobutton(panel2,text="Rotacion Horizontal",variable=opcion_radioboton, value=1).grid(column=0, row=1, sticky="W")
+        Radiobutton(panel2,text="Rotacion Vertical",variable=opcion_radioboton, value=2).grid(column=0, row=2, sticky="W")
+        Radiobutton(panel2,text="Traspuesta",variable=opcion_radioboton, value=3).grid(column=0, row=3, sticky="W")
+        Radiobutton(panel2,text="Limpiar",variable=opcion_radioboton, value=4).grid(column=0, row=4, sticky="W")
+        Radiobutton(panel2,text="Agregar Horizontal",variable=opcion_radioboton, value=5).grid(column=0, row=5, sticky="W")
+        Radiobutton(panel2,text="Agregar Vertical",variable=opcion_radioboton, value=6).grid(column=0, row=6, sticky="W")
+        Radiobutton(panel2,text="Agregar Rectangulo",variable=opcion_radioboton, value=7).grid(column=0, row=7, sticky="W")
+        Radiobutton(panel2,text="Agregar Triangulo",variable=opcion_radioboton, value=8).grid(column=0, row=8, sticky="W")
+        
+        #Boton opciones de una imagen //Panel 2
+        ttk.Button(panel2, text="Continuar", command=event.boton_una_imagen).grid(row=10,columnspan=2)
+
+        #Input operaciones de una iamgen //panel2
+        Label(panel2,text='Ingrese el nombre de la matriz').grid(row=3,column=6)
+        self.op1_matriz=Entry(panel2)
+        self.op1_matriz.grid(row=4,column=6)
+        
+        #Input cargar archivo //panel1
+        Label(panel1,text='Ingrese la ruta del archivo').grid(row=1,column=1)
+        self.ruta=Entry(panel1)
+        self.ruta.grid(row=2,column=1)
+
+        #Boton cargar archivo //panel1
+        ttk.Button(panel1, text="Cargar", command=event.leer_ruta).grid(row=4,columnspan=2)
+
+        #Tabla 1
+        '''
+        for r in range(0, 5):
+            for c in range(0, 5):
+                cell = Entry(panel4, width=10)
+                cell.grid(row=r, column=c)
+                cell.insert(0, f'{variable}')
+        '''
+
+
+class Eventos:
+
+    def leer_ruta(self):
+        rut= str(aplicacion.ruta.get())
+        try:
+            archivo = minidom.parse(rut)
+            print("Archivo leido correctamente")
+        except:
+            print("No se pudo abrir el documento")
+        #Lista1=Lista_ortogonal()
+        #Lista1.crear(5,3)
+        #Lista1.recorrer()
+
+    def boton_una_imagen(self):
+        #print(aplicacion.op1_matriz.get())
+        archivo=minidom.parse(aplicacion.ruta.get())
+        event.cargar_matriz(archivo,aplicacion.op1_matriz.get())   
+        
+    
+    def cargar_matriz(self,archivo,nombre):
+        matrices=archivo.getElementsByTagName("matriz")
+        imagen=""
+        filas="s"
+        columnas="sa"
+        temp=archivo.getElementsByTagName("matriz")
+
+        for matriz in matrices:
+            if nombre==matriz.getElementsByTagName("nombre")[0].firstChild.data:
+                filas=matriz.getElementsByTagName("filas")[0].firstChild.data
+                columnas=matriz.getElementsByTagName("columnas")[0].firstChild.data
+                imagen=matriz.getElementsByTagName("imagen")[0].firstChild.data
+                
+
+                print(filas)
+                print(columnas)
+                print(imagen)
+                break
+        
+
+
+
+
+
+class nodo():
+
+    def __init__(self,dato):
+        self.dato=dato
+        self.derecha=None
+        self.izquierda=None
+        self.arriba=None
+        self.abajo=None
+
+
+class Lista_ortogonal():    
+    
+    def __init__(self):
+        self.cabeza = None
+    
+    def crear(self,fila,columna):
+        temp_arriba=nodo(None)
+        temp_derecha=nodo(None)
+        for a in range(int(fila)):
+            for b in range(int(columna)):
+                nuevo = nodo(f"*{a+1},{b+1}")
+                nuevo.abajo=None
+                nuevo.derecha=None
+                if b == 0:
+                    nuevo.derecha=None
+                    if self.cabeza==None:
+                        self.cabeza=nuevo
+                    temp_derecha=nuevo
+                else:
+                    nuevo.izquierda=temp_derecha
+                    temp_derecha.derecha=nuevo
+                    temp_derecha = nuevo
+                if a == 0:
+                    nuevo.arriba=None
+                    temp_derecha=nuevo
+                else:
+                    nuevo.arriba=temp_arriba
+                    temp_arriba.abajo = nuevo
+                    temp_arriba=temp_arriba.derecha
+            temp_arriba=self.cabeza
+            while temp_arriba.abajo is not None:
+                temp_arriba=temp_arriba.abajo
+        
+
+    def recorrer(self):
+        if self.cabeza is not None:
+            temp=self.cabeza
+            while temp is not None:
+                temp2=temp
+                while temp2 is not None:
+                    print(temp2.dato)
+                    temp2=temp2.derecha
+                temp=temp.abajo
+        else:
+            print("La lista esta vacia")
+
+
+event=Eventos()
 
 if __name__=='__main__':
     ventana=Tk()
