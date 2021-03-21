@@ -1,5 +1,6 @@
 from tkinter import ttk
 from tkinter import *
+import tkinter.font as tkFont
 from xml.dom import minidom
 import xml.etree.ElementTree as ET 
 
@@ -22,9 +23,6 @@ class Principal:
         panel3 = LabelFrame(self.vent,text='Operaciones con dos iamgenes imagen')
         panel3.grid(row=4,column=0 ,pady=20,columnspan=3)
 
-        #panel4 tablas
-        panel4 = LabelFrame(self.vent,text='')
-        panel4.grid(row=2,column=5 ,pady=20,columnspan=3)
 
         #botones radiales //panel 3
         opcion_radioboton2=IntVar()
@@ -72,15 +70,37 @@ class Principal:
         #Boton cargar archivo //panel1
         ttk.Button(panel1, text="Cargar", command=event.leer_ruta).grid(row=4,columnspan=2)
 
-        #Tabla 1
-        '''
-        for r in range(0, 5):
-            for c in range(0, 5):
-                cell = Entry(panel4, width=10)
-                cell.grid(row=r, column=c)
-                cell.insert(0, f'{variable}')
-        '''
+        
 
+class Form_matriz():
+    def __init__(self,ventana,n,es,filas,columnas,imagen,lista):
+        self.vent1 = ventana
+        self.vent1.title(f'Matriz {n}')
+
+        #panel4 tabla
+        panel4 = LabelFrame(self.vent1,text=f'{es}')
+        panel4.grid(row=3,column=5 ,pady=20,columnspan=3)
+        #Tabla de la matriz selecionada // operacion de una matriz  
+        x=imagen.splitlines()
+        cont_fila=0
+        cont_columna=0
+        for y in x:
+            z=y.strip()
+            if z!="":
+               for a in z:
+                    cell = Entry(panel4, width=5)
+                    cell.grid(row=cont_columna, column=cont_fila)
+                    cell.insert(0, lista.getDato(cont_fila,cont_columna))
+                    tipo=tkFont.Font(family="Arial",size="120",weight="bold",slant="italic")
+                    cell.configure(font=tipo)
+                    cont_fila+=1      
+            else:
+                cont_columna-=1
+            cont_fila=0
+            cont_columna+=1
+
+
+        
 
 class Eventos:
 
@@ -91,14 +111,13 @@ class Eventos:
             print("Archivo leido correctamente")
         except:
             print("No se pudo abrir el documento")
-        #Lista1=Lista_ortogonal()
-        #Lista1.crear(5,3)
-        #Lista1.recorrer()
+
 
     def boton_una_imagen(self):
-        #print(aplicacion.op1_matriz.get())
+
         archivo=minidom.parse(aplicacion.ruta.get())
-        event.cargar_matriz(archivo,aplicacion.op1_matriz.get())   
+        event.cargar_matriz(archivo,aplicacion.op1_matriz.get())
+
         
     
     def cargar_matriz(self,archivo,nombre):
@@ -114,10 +133,32 @@ class Eventos:
                 columnas=matriz.getElementsByTagName("columnas")[0].firstChild.data
                 imagen=matriz.getElementsByTagName("imagen")[0].firstChild.data
                 
-
-                print(filas)
-                print(columnas)
-                print(imagen)
+                Matriz1=Lista_ortogonal()
+                Matriz1.crear(filas,columnas)
+                #Matriz1.recorrer()
+                
+                x=imagen.splitlines()
+                cont_fila=0
+                cont_columna=0
+                for y in x:
+                    z=y.strip()
+                    if z!="":
+                        #print(f"z:{z}")
+                        for a in z:
+                            #print(f"a:{a}")
+                            Matriz1.agregar(cont_fila,cont_columna,a)
+                            cont_fila+=1      
+                    else:
+                        cont_columna-=1
+                    cont_fila=0
+                    cont_columna+=1
+                
+                ventana_matriz1=Tk()
+                aplicacion1=Form_matriz(ventana_matriz1,1,f'Matriz seleccionada:  "{nombre}" ',filas,columnas,imagen,Matriz1)
+                ventana_matriz1.mainloop()
+                
+                #Matriz1.recorrer()
+                
                 break
         
 
@@ -146,6 +187,7 @@ class Lista_ortogonal():
         for a in range(int(fila)):
             for b in range(int(columna)):
                 nuevo = nodo(f"*{a+1},{b+1}")
+                #print(nuevo.dato)
                 nuevo.abajo=None
                 nuevo.derecha=None
                 if b == 0:
@@ -168,6 +210,45 @@ class Lista_ortogonal():
             while temp_arriba.abajo is not None:
                 temp_arriba=temp_arriba.abajo
         
+    def agregar(self,x,y,valor):
+        if self.cabeza is not None:
+            temp=self.cabeza
+            cont_x=0
+            cont_y=0
+            while temp is not None:
+                temp2=temp
+                while temp2 is not None:
+                    if cont_x==int(x) and cont_y==int(y):
+                        temp2.dato=valor
+                        #print(f" temp2= {temp2.dato}")
+                        break
+                    temp2=temp2.derecha
+                    cont_x+=1
+                cont_x=0
+                temp=temp.abajo
+                cont_y+=1
+        else:
+            print("La lista esta vacia ")
+
+    def getDato(self,x,y):
+        if self.cabeza is not None:
+            temp=self.cabeza
+            cont_x=0
+            cont_y=0
+            while temp is not None:
+                temp2=temp
+                while temp2 is not None:
+                    if cont_x==int(x) and cont_y==int(y):
+                        return temp2.dato
+                    temp2=temp2.derecha
+                    cont_x+=1
+                cont_x=0
+                temp=temp.abajo
+                cont_y+=1
+        else:
+            print("La lista esta vacia ")
+
+
 
     def recorrer(self):
         if self.cabeza is not None:
@@ -183,6 +264,7 @@ class Lista_ortogonal():
 
 
 event=Eventos()
+
 
 if __name__=='__main__':
     ventana=Tk()
