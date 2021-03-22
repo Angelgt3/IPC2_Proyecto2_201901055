@@ -146,6 +146,8 @@ class Eventos:
                         #print(f"z:{z}")
                         for a in z:
                             #print(f"a:{a}")
+                            if a=="_":
+                                a=""
                             Matriz1.agregar(cont_fila,cont_columna,a)
                             cont_fila+=1      
                     else:
