@@ -3,6 +3,7 @@ from tkinter import *
 import tkinter.font as tkFont
 from xml.dom import minidom
 import xml.etree.ElementTree as ET 
+import threading 
 
 
 class Principal:
@@ -25,11 +26,11 @@ class Principal:
 
 
         #botones radiales //panel 3
-        opcion_radioboton2=IntVar()
-        Radiobutton(panel3,text="Union",variable=opcion_radioboton2, value=1).grid(column=0, row=1, sticky="W")
-        Radiobutton(panel3,text="Intersección",variable=opcion_radioboton2, value=2).grid(column=0, row=2, sticky="W")
-        Radiobutton(panel3,text="Diferencia",variable=opcion_radioboton2, value=3).grid(column=0, row=3, sticky="W")
-        Radiobutton(panel3,text="Diferencia simétrica",variable=opcion_radioboton2, value=4).grid(column=0, row=4, sticky="W")
+        self.opcion_radioboton2=IntVar()
+        Radiobutton(panel3,text="Union",variable=self.opcion_radioboton2, value=1).grid(column=0, row=1, sticky="W")
+        Radiobutton(panel3,text="Intersección",variable=self.opcion_radioboton2, value=2).grid(column=0, row=2, sticky="W")
+        Radiobutton(panel3,text="Diferencia",variable=self.opcion_radioboton2, value=3).grid(column=0, row=3, sticky="W")
+        Radiobutton(panel3,text="Diferencia simétrica",variable=self.opcion_radioboton2, value=4).grid(column=0, row=4, sticky="W")
 
         #Boton opciones de dos imagenes //Panel 3
         ttk.Button(panel3, text="Continuar").grid(row=5,columnspan=2)
@@ -44,16 +45,16 @@ class Principal:
 
 
         #botones radiales opcion de una imagen //panel 2
-        opcion_radioboton=IntVar()
-        Radiobutton(panel2,text="Rotacion Horizontal",variable=opcion_radioboton, value=1).grid(column=0, row=1, sticky="W")
-        Radiobutton(panel2,text="Rotacion Vertical",variable=opcion_radioboton, value=2).grid(column=0, row=2, sticky="W")
-        Radiobutton(panel2,text="Traspuesta",variable=opcion_radioboton, value=3).grid(column=0, row=3, sticky="W")
-        Radiobutton(panel2,text="Limpiar",variable=opcion_radioboton, value=4).grid(column=0, row=4, sticky="W")
-        Radiobutton(panel2,text="Agregar Horizontal",variable=opcion_radioboton, value=5).grid(column=0, row=5, sticky="W")
-        Radiobutton(panel2,text="Agregar Vertical",variable=opcion_radioboton, value=6).grid(column=0, row=6, sticky="W")
-        Radiobutton(panel2,text="Agregar Rectangulo",variable=opcion_radioboton, value=7).grid(column=0, row=7, sticky="W")
-        Radiobutton(panel2,text="Agregar Triangulo",variable=opcion_radioboton, value=8).grid(column=0, row=8, sticky="W")
-        
+        self.opcion_radioboton=IntVar()
+        Radiobutton(panel2,text="Rotacion Horizontal",variable=self.opcion_radioboton, value=1).grid(column=0, row=1, sticky="W")
+        Radiobutton(panel2,text="Rotacion Vertical",variable=self.opcion_radioboton, value=2).grid(column=0, row=2, sticky="W")
+        Radiobutton(panel2,text="Traspuesta",variable=self.opcion_radioboton, value=3).grid(column=0, row=3, sticky="W")
+        Radiobutton(panel2,text="Limpiar",variable=self.opcion_radioboton, value=4).grid(column=0, row=4, sticky="W")
+        Radiobutton(panel2,text="Agregar Horizontal",variable=self.opcion_radioboton, value=5).grid(column=0, row=5, sticky="W")
+        Radiobutton(panel2,text="Agregar Vertical",variable=self.opcion_radioboton, value=6).grid(column=0, row=6, sticky="W")
+        Radiobutton(panel2,text="Agregar Rectangulo",variable=self.opcion_radioboton, value=7).grid(column=0, row=7, sticky="W")
+        Radiobutton(panel2,text="Agregar Triangulo",variable=self.opcion_radioboton, value=8).grid(column=0, row=8, sticky="W")
+
         #Boton opciones de una imagen //Panel 2
         ttk.Button(panel2, text="Continuar", command=event.boton_una_imagen).grid(row=10,columnspan=2)
 
@@ -70,35 +71,42 @@ class Principal:
         #Boton cargar archivo //panel1
         ttk.Button(panel1, text="Cargar", command=event.leer_ruta).grid(row=4,columnspan=2)
 
-        
-
-class Form_matriz():
-    def __init__(self,ventana,n,es,filas,columnas,imagen,lista):
-        self.vent1 = ventana
-        self.vent1.title(f'Matriz {n}')
+class form_new_matriz():
+    def __init__(self,ventana,es,filas,columnas,lista,lista2):
+        self.vent2 = ventana
+        self.vent2.title(f'Matriz {es}')
 
         #panel4 tabla
-        panel4 = LabelFrame(self.vent1,text=f'{es}')
+        panel4 = LabelFrame(self.vent2,text=f'Matriz selecionada')
         panel4.grid(row=3,column=5 ,pady=20,columnspan=3)
-        #Tabla de la matriz selecionada // operacion de una matriz  
-        x=imagen.splitlines()
         cont_fila=0
         cont_columna=0
-        for y in x:
-            z=y.strip()
-            if z!="":
-               for a in z:
-                    cell = Entry(panel4, width=5)
-                    cell.grid(row=cont_columna, column=cont_fila)
-                    cell.insert(0, lista.getDato(cont_fila,cont_columna))
-                    tipo=tkFont.Font(family="Arial",size="120",weight="bold",slant="italic")
-                    cell.configure(font=tipo)
-                    cont_fila+=1      
-            else:
-                cont_columna-=1
+        for c in range(int(filas)):
+            for a in range(int(columnas)):
+                cell = Entry(panel4, width=5)
+                cell.grid(row=cont_columna, column=cont_fila)
+                cell.insert(0, lista.getDato(cont_fila,cont_columna))
+                tipo=tkFont.Font(family="Arial",size="120",weight="bold",slant="italic")
+                cell.configure(font=tipo)
+                cont_fila+=1
             cont_fila=0
             cont_columna+=1
 
+        #panel5 tabla
+        panel5 = LabelFrame(self.vent2,text=f'Matriz operada')
+        panel5.grid(row=6,column=5 ,pady=20,columnspan=3)
+        cont_fila=0
+        cont_columna=0
+        for c in range(int(filas)):
+            for a in range(int(columnas)):
+                cell = Entry(panel5, width=5)
+                cell.grid(row=cont_columna, column=cont_fila)
+                cell.insert(0, lista2.getDato(cont_fila,cont_columna))
+                tipo=tkFont.Font(family="Arial",size="120",weight="bold",slant="italic")
+                cell.configure(font=tipo)
+                cont_fila+=1
+            cont_fila=0
+            cont_columna+=1
 
         
 
@@ -114,17 +122,53 @@ class Eventos:
 
 
     def boton_una_imagen(self):
-
         archivo=minidom.parse(aplicacion.ruta.get())
-        event.cargar_matriz(archivo,aplicacion.op1_matriz.get())
+        if aplicacion.opcion_radioboton.get()==1: #Rotacion horizontal de una imagen   
+            Matriz1=event.cargar_matriz(archivo,aplicacion.op1_matriz.get(),1)
+            #event.Rotacion_H_1I(archivo,aplicacion.op1_matriz.get(),Matriz1)
+            print("op1")
+        elif aplicacion.opcion_radioboton.get()==2:
+            print("op2")
+        elif aplicacion.opcion_radioboton.get()==3:
+            print("op3")
+        elif aplicacion.opcion_radioboton.get()==4:
+            print("op4")
+        elif aplicacion.opcion_radioboton.get()==5:
+            print("op5")
+        elif aplicacion.opcion_radioboton.get()==6:
+            print("op6")
+        elif aplicacion.opcion_radioboton.get()==7:
+            print("op7")
+        elif aplicacion.opcion_radioboton.get()==8:
+            print("op8")
+        
 
         
+    def Rotacion_H_1I(self,filas,columnas,Matriz1,Matriz2):
+        cont_x=0
+        cont_y=int(filas)-1
+        #print(filas)
+        #print(columnas)
+        for a in range(int(filas)):
+            for b in range(int(columnas)):
+                #print(f"coordenadas: {cont_x,cont_y}")
+                #print(f"dato: {Matriz1.getDato(a,b)} de: {a,b}")
+                Matriz2.agregar(cont_x,cont_y,Matriz1.getDato(b,a))
+                cont_x+=1
+            cont_x=0
+            cont_y-=1
+        #print("matri1")
+        #Matriz1.recorrer()
+        #print("matriz2")
+        #Matriz2.recorrer()
+        
+                
     
-    def cargar_matriz(self,archivo,nombre):
+    def cargar_matriz(self,archivo,nombre,valor):
         matrices=archivo.getElementsByTagName("matriz")
         imagen=""
-        filas="s"
-        columnas="sa"
+        filas=""
+        columnas=""
         temp=archivo.getElementsByTagName("matriz")
 
         for matriz in matrices:
@@ -135,6 +179,8 @@ class Eventos:
                 
                 Matriz1=Lista_ortogonal()
                 Matriz1.crear(filas,columnas)
+                Matriz2=Lista_ortogonal()
+                Matriz2.crear(filas,columnas)
                 #Matriz1.recorrer()
                 
                 x=imagen.splitlines()
@@ -155,15 +201,18 @@ class Eventos:
                     cont_fila=0
                     cont_columna+=1
                 
-                ventana_matriz1=Tk()
-                aplicacion1=Form_matriz(ventana_matriz1,1,f'Matriz seleccionada:  "{nombre}" ',filas,columnas,imagen,Matriz1)
-                ventana_matriz1.mainloop()
                 
-                #Matriz1.recorrer()
-                
-                break
+        if valor==1:
+            event.Rotacion_H_1I(filas,columnas,Matriz1,Matriz2)
+            t = threading.Thread(target=event.ventana("ventana_matriz1",f'Matriz seleccionada:  "{nombre}" ',filas,columnas,Matriz1,Matriz2)) 
+            t.start()
+            
         
 
+    def ventana(self,nombre,es,filas,columnas,lista,lista2):
+        nombre=Tk()
+        aplicacion1=form_new_matriz(nombre,es,filas,columnas,lista,lista2)
+        nombre.mainloop()
 
 
 
@@ -250,7 +299,7 @@ class Lista_ortogonal():
         else:
             print("La lista esta vacia ")
 
-
+    
 
     def recorrer(self):
         if self.cabeza is not None:

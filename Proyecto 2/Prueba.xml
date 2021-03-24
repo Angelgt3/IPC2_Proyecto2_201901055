@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<matrices>
+    <matriz>
+        <nombre>Matriz1</nombre>
+        <filas>4</filas>
+        <columnas>5</columnas>
+        <imagen>
+        __**_
+        **__*
+        _____
+        *****
+        </imagen>
+    </matriz>
+    <matriz>
+        <nombre>Matriz2</nombre>
+        <filas>7</filas>
+        <columnas>2</columnas>
+        <imagen>
+        **
+        _*
+        *_
+        __
+        **
+        *_
+        __
+        </imagen>
+    </matriz>
+    <matriz>
+        <nombre>Matriz3</nombre>
+        <filas>3</filas>
+        <columnas>9</columnas>
+        <imagen>
+        ***__***_
+        ___***___
+        *_**___*_
+        </imagen>
+    </matriz>
+</matrices>
