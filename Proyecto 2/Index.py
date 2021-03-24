@@ -72,7 +72,7 @@ class Principal:
         ttk.Button(panel1, text="Cargar", command=event.leer_ruta).grid(row=4,columnspan=2)
 
 class form_new_matriz():
-    def __init__(self,ventana,es,filas,columnas,lista,lista2):
+    def __init__(self,ventana,es,filas,columnas,lista,filas2,columnas2,lista2):
         self.vent2 = ventana
         self.vent2.title(f'Matriz {es}')
 
@@ -97,8 +97,8 @@ class form_new_matriz():
         panel5.grid(row=6,column=5 ,pady=20,columnspan=3)
         cont_fila=0
         cont_columna=0
-        for c in range(int(filas)):
-            for a in range(int(columnas)):
+        for c in range(int(filas2)):
+            for a in range(int(columnas2)):
                 cell = Entry(panel5, width=5)
                 cell.grid(row=cont_columna, column=cont_fila)
                 cell.insert(0, lista2.getDato(cont_fila,cont_columna))
@@ -123,22 +123,7 @@ class Eventos:
 
     def boton_una_imagen(self):
         archivo=minidom.parse(aplicacion.ruta.get())
-        if aplicacion.opcion_radioboton.get()==1: #Rotacion horizontal de una imagen   
-            Matriz1=event.cargar_matriz(archivo,aplicacion.op1_matriz.get(),1)
-        elif aplicacion.opcion_radioboton.get()==2:#Rotacion vertical de una imagen
-            Matriz1=event.cargar_matriz(archivo,aplicacion.op1_matriz.get(),2)
-        elif aplicacion.opcion_radioboton.get()==3:
-            print("op3")
-        elif aplicacion.opcion_radioboton.get()==4:
-            print("op4")
-        elif aplicacion.opcion_radioboton.get()==5:
-            print("op5")
-        elif aplicacion.opcion_radioboton.get()==6:
-            print("op6")
-        elif aplicacion.opcion_radioboton.get()==7:
-            print("op7")
-        elif aplicacion.opcion_radioboton.get()==8:
-            print("op8")
+        Matriz1=event.cargar_matriz(archivo,aplicacion.op1_matriz.get(),aplicacion.opcion_radioboton.get())
         
 
         
@@ -165,8 +150,20 @@ class Eventos:
                 cont_x-=1
             cont_x=int(columnas)-1
             cont_y+=1
-                
+
+    def Traspuesta_1I(self,filas,columnas,Matriz1,Matriz2):
+        cont_x=0
+        cont_y=0
+        for a in range(int(filas)):
+            for b in range(int(columnas)):
+                #print(f"coordenadas: {cont_x,cont_y}")
+                #print(f"dato: {Matriz1.getDato(a,b)} de: {a,b}")
+                Matriz2.agregar(cont_x,cont_y,Matriz1.getDato(a,b))
+                cont_x+=1
+            cont_x=0
+            cont_y+=1           
     
+
     def cargar_matriz(self,archivo,nombre,valor):
         matrices=archivo.getElementsByTagName("matriz")
         imagen=""
@@ -182,8 +179,6 @@ class Eventos:
                 
                 Matriz1=Lista_ortogonal()
                 Matriz1.crear(filas,columnas)
-                Matriz2=Lista_ortogonal()
-                Matriz2.crear(filas,columnas)
                 #Matriz1.recorrer()
                 
                 x=imagen.splitlines()
@@ -206,19 +201,29 @@ class Eventos:
                 
                 
         if valor==1:
+            Matriz2=Lista_ortogonal()
+            Matriz2.crear(filas,columnas)
             event.Rotacion_H_1I(filas,columnas,Matriz1,Matriz2)
-            t = threading.Thread(target=event.ventana("ventana_matriz",f'Matriz seleccionada:  "{nombre}" ',filas,columnas,Matriz1,Matriz2)) 
+            t = threading.Thread(target=event.ventana("ventana_matriz",f'Matriz seleccionada:  "{nombre}" ',filas,columnas,Matriz1,filas,columnas,Matriz2)) 
             t.start()
         elif valor==2:
+            Matriz2=Lista_ortogonal()
+            Matriz2.crear(filas,columnas)
             event.Rotacion_V_1I(filas,columnas,Matriz1,Matriz2)
-            t = threading.Thread(target=event.ventana("ventana_matriz",f'Matriz seleccionada:  "{nombre}" ',filas,columnas,Matriz1,Matriz2)) 
+            t = threading.Thread(target=event.ventana("ventana_matriz",f'Matriz seleccionada:  "{nombre}" ',filas,columnas,Matriz1,filas,columnas,Matriz2)) 
+            t.start()
+        elif valor==3:
+            Matriz2=Lista_ortogonal()
+            Matriz2.crear(columnas,filas)
+            event.Traspuesta_1I(columnas,filas,Matriz1,Matriz2)
+            t = threading.Thread(target=event.ventana("ventana_matriz",f'Matriz seleccionada:  "{nombre}" ',filas,columnas,Matriz1,columnas,filas,Matriz2)) 
             t.start()
             
         
 
-    def ventana(self,nombre,es,filas,columnas,lista,lista2):
+    def ventana(self,nombre,es,filas,columnas,lista,filas2,columnas2,lista2):
         nombre=Tk()
-        aplicacion1=form_new_matriz(nombre,es,filas,columnas,lista,lista2)
+        aplicacion1=form_new_matriz(nombre,es,filas,columnas,lista,filas2,columnas2,lista2)
         nombre.mainloop()
 
 
