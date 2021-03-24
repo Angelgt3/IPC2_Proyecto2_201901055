@@ -125,10 +125,8 @@ class Eventos:
         archivo=minidom.parse(aplicacion.ruta.get())
         if aplicacion.opcion_radioboton.get()==1: #Rotacion horizontal de una imagen   
             Matriz1=event.cargar_matriz(archivo,aplicacion.op1_matriz.get(),1)
-            #event.Rotacion_H_1I(archivo,aplicacion.op1_matriz.get(),Matriz1)
-            print("op1")
-        elif aplicacion.opcion_radioboton.get()==2:
-            print("op2")
+        elif aplicacion.opcion_radioboton.get()==2:#Rotacion vertical de una imagen
+            Matriz1=event.cargar_matriz(archivo,aplicacion.op1_matriz.get(),2)
         elif aplicacion.opcion_radioboton.get()==3:
             print("op3")
         elif aplicacion.opcion_radioboton.get()==4:
@@ -147,8 +145,6 @@ class Eventos:
     def Rotacion_H_1I(self,filas,columnas,Matriz1,Matriz2):
         cont_x=0
         cont_y=int(filas)-1
-        #print(filas)
-        #print(columnas)
         for a in range(int(filas)):
             for b in range(int(columnas)):
                 #print(f"coordenadas: {cont_x,cont_y}")
@@ -157,11 +153,18 @@ class Eventos:
                 cont_x+=1
             cont_x=0
             cont_y-=1
-        #print("matri1")
-        #Matriz1.recorrer()
-        #print("matriz2")
-        #Matriz2.recorrer()
-        
+    
+    def Rotacion_V_1I(self,filas,columnas,Matriz1,Matriz2):
+        cont_x=int(columnas)-1
+        cont_y=0
+        for a in range(int(filas)):
+            for b in range(int(columnas)):
+                #print(f"coordenadas: {cont_x,cont_y}")
+                #print(f"dato: {Matriz1.getDato(a,b)} de: {b,a}")
+                Matriz2.agregar(cont_x,cont_y,Matriz1.getDato(b,a))
+                cont_x-=1
+            cont_x=int(columnas)-1
+            cont_y+=1
                 
     
     def cargar_matriz(self,archivo,nombre,valor):
@@ -204,7 +207,11 @@ class Eventos:
                 
         if valor==1:
             event.Rotacion_H_1I(filas,columnas,Matriz1,Matriz2)
-            t = threading.Thread(target=event.ventana("ventana_matriz1",f'Matriz seleccionada:  "{nombre}" ',filas,columnas,Matriz1,Matriz2)) 
+            t = threading.Thread(target=event.ventana("ventana_matriz",f'Matriz seleccionada:  "{nombre}" ',filas,columnas,Matriz1,Matriz2)) 
+            t.start()
+        elif valor==2:
+            event.Rotacion_V_1I(filas,columnas,Matriz1,Matriz2)
+            t = threading.Thread(target=event.ventana("ventana_matriz",f'Matriz seleccionada:  "{nombre}" ',filas,columnas,Matriz1,Matriz2)) 
             t.start()
             
         
