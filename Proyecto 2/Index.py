@@ -57,7 +57,7 @@ class Principal:
 
         #Boton opciones de una imagen //Panel 2
         ttk.Button(panel2, text="Continuar", command=event.boton_una_imagen).grid(row=10,columnspan=2)
-
+        
         #Input operaciones de una iamgen //panel2
         Label(panel2,text='Ingrese el nombre de la matriz').grid(row=3,column=6)
         self.op1_matriz=Entry(panel2)
@@ -71,6 +71,28 @@ class Principal:
         #Boton cargar archivo //panel1
         ttk.Button(panel1, text="Cargar", command=event.leer_ruta).grid(row=4,columnspan=2)
 
+
+        #panel4 pregunta 
+        panel4 = LabelFrame(self.vent,text='Valores: Limpiar,agregar para una imagen')
+        panel4.grid(row=2,column=8 ,pady=20,columnspan=3)
+        #input 1 fila inicial
+        Label(panel4,text='Ingrese no. fila inicial:').grid(row=0,column=1)
+        self.fila_inicial=Entry(panel4)
+        self.fila_inicial.grid(row=1,column=1)
+        #input 2 columna inicial
+        Label(panel4,text='Ingrese no. columna inicial:').grid(row=2,column=1)
+        self.columna_inicial=Entry(panel4)
+        self.columna_inicial.grid(row=3,column=1)
+        #input 3 fila final
+        Label(panel4,text='Ingrese no. fila final:').grid(row=4,column=1)
+        self.fila_final=Entry(panel4)
+        self.fila_final.grid(row=5,column=1)
+        #input 4 columna final
+        Label(panel4,text='Ingrese no. columna final:').grid(row=6,column=1)
+        self.columna_final=Entry(panel4)
+        self.columna_final.grid(row=7,column=1)
+
+
 class form_new_matriz():
     def __init__(self,ventana,es,filas,columnas,lista,filas2,columnas2,lista2):
         self.vent2 = ventana
@@ -83,11 +105,11 @@ class form_new_matriz():
         cont_columna=0
         for c in range(int(filas)):
             for a in range(int(columnas)):
-                cell = Entry(panel4, width=5)
-                cell.grid(row=cont_columna, column=cont_fila)
-                cell.insert(0, lista.getDato(cont_fila,cont_columna))
+                celda = Entry(panel4, width=5)
+                celda.grid(row=cont_columna, column=cont_fila)
+                celda.insert(0, lista.getDato(cont_fila,cont_columna))
                 tipo=tkFont.Font(family="Arial",size="120",weight="bold",slant="italic")
-                cell.configure(font=tipo)
+                celda.configure(font=tipo)
                 cont_fila+=1
             cont_fila=0
             cont_columna+=1
@@ -99,11 +121,11 @@ class form_new_matriz():
         cont_columna=0
         for c in range(int(filas2)):
             for a in range(int(columnas2)):
-                cell = Entry(panel5, width=5)
-                cell.grid(row=cont_columna, column=cont_fila)
-                cell.insert(0, lista2.getDato(cont_fila,cont_columna))
+                celda = Entry(panel5, width=5)
+                celda.grid(row=cont_columna, column=cont_fila)
+                celda.insert(0, lista2.getDato(cont_fila,cont_columna))
                 tipo=tkFont.Font(family="Arial",size="120",weight="bold",slant="italic")
-                cell.configure(font=tipo)
+                celda.configure(font=tipo)
                 cont_fila+=1
             cont_fila=0
             cont_columna+=1
@@ -163,6 +185,22 @@ class Eventos:
             cont_x=0
             cont_y+=1           
     
+    def Limpiar_1I(self,filas,columnas,Matriz1,Matriz2):
+        f_i=aplicacion.fila_inicial.get()
+        f_f=aplicacion.fila_final.get()
+        c_i=aplicacion.columna_inicial.get()
+        c_f=aplicacion.columna_final.get()
+
+        for a in range(int(filas)):
+            for b in range(int(columnas)):
+                Matriz2.agregar(b,a,Matriz1.getDato(b,a))
+ 
+        for a in range(int(filas)):
+            for b in range(int(columnas)):
+                if a>=int(f_i)-1 and a<=int(f_f)-1 and b>=int(c_i)-1 and b<=int(c_f)-1: 
+                    Matriz2.agregar(b,a,"")
+        #Matriz2.recorrer()
+
 
     def cargar_matriz(self,archivo,nombre,valor):
         matrices=archivo.getElementsByTagName("matriz")
@@ -218,15 +256,20 @@ class Eventos:
             event.Traspuesta_1I(columnas,filas,Matriz1,Matriz2)
             t = threading.Thread(target=event.ventana("ventana_matriz",f'Matriz seleccionada:  "{nombre}" ',filas,columnas,Matriz1,columnas,filas,Matriz2)) 
             t.start()
-            
-        
+        elif valor==4:
+            Matriz2=Lista_ortogonal()
+            Matriz2.crear(filas,columnas)
+            event.Limpiar_1I(filas,columnas,Matriz1,Matriz2)
+            t = threading.Thread(target=event.ventana("ventana_matriz",f'Matriz seleccionada:  "{nombre}" ',filas,columnas,Matriz1,filas,columnas,Matriz2)) 
+            t.start()
+      
 
     def ventana(self,nombre,es,filas,columnas,lista,filas2,columnas2,lista2):
         nombre=Tk()
         aplicacion1=form_new_matriz(nombre,es,filas,columnas,lista,filas2,columnas2,lista2)
         nombre.mainloop()
 
-
+    
 
 
 class nodo():
