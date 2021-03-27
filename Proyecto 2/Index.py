@@ -71,7 +71,6 @@ class Principal:
         #Boton cargar archivo //panel1
         ttk.Button(panel1, text="Cargar", command=event.leer_ruta).grid(row=4,columnspan=2)
 
-
         #panel4 pregunta 
         panel4 = LabelFrame(self.vent,text='Valores: Limpiar,agregar para una imagen')
         panel4.grid(row=2,column=8 ,pady=20,columnspan=3)
@@ -79,14 +78,14 @@ class Principal:
         Label(panel4,text='Ingrese no. fila inicial:').grid(row=0,column=1)
         self.fila_inicial=Entry(panel4)
         self.fila_inicial.grid(row=1,column=1)
-        #input 2 columna inicial
-        Label(panel4,text='Ingrese no. columna inicial:').grid(row=2,column=1)
-        self.columna_inicial=Entry(panel4)
-        self.columna_inicial.grid(row=3,column=1)
         #input 3 fila final
-        Label(panel4,text='Ingrese no. fila final:').grid(row=4,column=1)
+        Label(panel4,text='Ingrese no. fila final:').grid(row=2,column=1)
         self.fila_final=Entry(panel4)
-        self.fila_final.grid(row=5,column=1)
+        self.fila_final.grid(row=3,column=1)
+        #input 2 columna inicial
+        Label(panel4,text='Ingrese no. columna inicial:').grid(row=4,column=1)
+        self.columna_inicial=Entry(panel4)
+        self.columna_inicial.grid(row=5,column=1)
         #input 4 columna final
         Label(panel4,text='Ingrese no. columna final:').grid(row=6,column=1)
         self.columna_final=Entry(panel4)
@@ -201,6 +200,33 @@ class Eventos:
                     Matriz2.agregar(b,a,"")
         #Matriz2.recorrer()
 
+    def agregar_FH(self,filas,columnas,Matriz1,Matriz2):
+        f_i=aplicacion.fila_inicial.get()
+        c_i=aplicacion.columna_inicial.get()
+        c_f=aplicacion.columna_final.get()
+
+        for a in range(int(filas)):
+            for b in range(int(columnas)):
+                Matriz2.agregar(b,a,Matriz1.getDato(b,a))
+ 
+        for a in range(int(filas)):
+            for b in range(int(columnas)):
+                if a>=int(f_i)-1 and a<=int(f_i)-1 and b>=int(c_i)-1 and b<=int(c_f)-1: 
+                    Matriz2.agregar(b,a,"*")
+    
+    def agregar_FV(self,filas,columnas,Matriz1,Matriz2):
+        f_i=aplicacion.fila_inicial.get()
+        f_f=aplicacion.fila_final.get()
+        c_i=aplicacion.columna_inicial.get()
+
+        for a in range(int(filas)):
+            for b in range(int(columnas)):
+                Matriz2.agregar(b,a,Matriz1.getDato(b,a))
+ 
+        for a in range(int(filas)):
+            for b in range(int(columnas)):
+                if a>=int(f_i)-1 and a<=int(f_f)-1 and b>=int(c_i)-1 and b<=int(c_i)-1: 
+                    Matriz2.agregar(b,a,"*")
 
     def cargar_matriz(self,archivo,nombre,valor):
         matrices=archivo.getElementsByTagName("matriz")
@@ -260,6 +286,18 @@ class Eventos:
             Matriz2=Lista_ortogonal()
             Matriz2.crear(filas,columnas)
             event.Limpiar_1I(filas,columnas,Matriz1,Matriz2)
+            t = threading.Thread(target=event.ventana("ventana_matriz",f'Matriz seleccionada:  "{nombre}" ',filas,columnas,Matriz1,filas,columnas,Matriz2)) 
+            t.start()
+        elif valor==5:
+            Matriz2=Lista_ortogonal()
+            Matriz2.crear(filas,columnas)
+            event.agregar_FH(filas,columnas,Matriz1,Matriz2)
+            t = threading.Thread(target=event.ventana("ventana_matriz",f'Matriz seleccionada:  "{nombre}" ',filas,columnas,Matriz1,filas,columnas,Matriz2)) 
+            t.start()
+        elif valor==6:
+            Matriz2=Lista_ortogonal()
+            Matriz2.crear(filas,columnas)
+            event.agregar_FV(filas,columnas,Matriz1,Matriz2)
             t = threading.Thread(target=event.ventana("ventana_matriz",f'Matriz seleccionada:  "{nombre}" ',filas,columnas,Matriz1,filas,columnas,Matriz2)) 
             t.start()
       

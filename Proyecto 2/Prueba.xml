@@ -35,4 +35,30 @@
         *_**___*_
         </imagen>
     </matriz>
+    <matriz>
+        <nombre>Matriz4</nombre>
+        <filas>6</filas>
+        <columnas>5</columnas>
+        <imagen>
+        _____
+        _____
+        _____
+        _____
+        _____
+        _____
+        </imagen>
+    </matriz>
+    <matriz>
+        <nombre>Matriz5</nombre>
+        <filas>6</filas>
+        <columnas>5</columnas>
+        <imagen>
+        *****
+        *****
+        *****
+        *****
+        *****
+        *****
+        </imagen>
+    </matriz>
 </matrices>
