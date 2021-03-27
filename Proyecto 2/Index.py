@@ -211,7 +211,7 @@ class Eventos:
  
         for a in range(int(filas)):
             for b in range(int(columnas)):
-                if a>=int(f_i)-1 and a<=int(f_i)-1 and b>=int(c_i)-1 and b<=int(c_f)-1: 
+                if (a==int(f_i)-1 and b>=int(c_i)-1 and b<=int(c_f)-1): 
                     Matriz2.agregar(b,a,"*")
     
     def agregar_FV(self,filas,columnas,Matriz1,Matriz2):
@@ -225,7 +225,7 @@ class Eventos:
  
         for a in range(int(filas)):
             for b in range(int(columnas)):
-                if a>=int(f_i)-1 and a<=int(f_f)-1 and b>=int(c_i)-1 and b<=int(c_i)-1: 
+                if (a>=int(f_i)-1 and a<=int(f_f)-1 and b==int(c_i)-1): 
                     Matriz2.agregar(b,a,"*")
 
     def Rectangulo_1I(self,filas,columnas,Matriz1,Matriz2):
@@ -243,6 +243,26 @@ class Eventos:
                 if  ((a>=int(f_i)-1 and a<=int(f_f)-1) and (b==int(c_i)-1 or b==int(c_f)-1)) or ((a==int(f_i)-1 or a==int(f_f)-1) and (b>=int(c_i)-1 and b<=int(c_f)-1)): 
                     Matriz2.agregar(b,a,"*")
     
+    def Triangulo_1I(self,filas,columnas,Matriz1,Matriz2):
+        f_i=aplicacion.fila_inicial.get()
+        c_i=aplicacion.columna_inicial.get()
+        f_f=aplicacion.fila_final.get()
+        c_f=f_f
+        longitud=int(f_f)-int(f_i)
+        for a in range(int(filas)):
+            for b in range(int(columnas)):
+                Matriz2.agregar(b,a,Matriz1.getDato(b,a))
+
+        for a in range(int(filas)):
+            for b in range(int(columnas)):
+                if (a>=int(f_i)-1 and a<=int(f_f)-1 and b==int(c_i)-1):
+                    Matriz2.agregar(b,a,"*")
+                if (a==int(f_f)-1 and b>=int(c_i)-1 and b<=int(c_f)-1):
+                    Matriz2.agregar(b,a,"*")
+                if a==int(f_i)-1 and b==int(c_i)-1:
+                    for c in range(longitud):
+                        Matriz2.agregar(b+(c+1),a+(c+1),"*")
+
     def cargar_matriz(self,archivo,nombre,valor):
         matrices=archivo.getElementsByTagName("matriz")
         imagen=""
@@ -319,6 +339,12 @@ class Eventos:
             Matriz2=Lista_ortogonal()
             Matriz2.crear(filas,columnas)
             event.Rectangulo_1I(filas,columnas,Matriz1,Matriz2)
+            t = threading.Thread(target=event.ventana("ventana_matriz",f'Matriz seleccionada:  "{nombre}" ',filas,columnas,Matriz1,filas,columnas,Matriz2)) 
+            t.start()
+        elif valor==8:
+            Matriz2=Lista_ortogonal()
+            Matriz2.crear(filas,columnas)
+            event.Triangulo_1I(filas,columnas,Matriz1,Matriz2)
             t = threading.Thread(target=event.ventana("ventana_matriz",f'Matriz seleccionada:  "{nombre}" ',filas,columnas,Matriz1,filas,columnas,Matriz2)) 
             t.start()
       
