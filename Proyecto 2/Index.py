@@ -430,6 +430,28 @@ class Eventos:
                 except:
                     continue
 
+    def Diferencia(self,Matriz1,Matriz2,Matriz3,filas,columnas):
+        for a in range(int(filas)):
+            for b in range(int(columnas)):
+                try:
+                    if Matriz1.getDato(b,a)=="*" and Matriz2.getDato(b,a)!="*":
+                        Matriz3.agregar(b,a,"*")
+                    else:
+                        Matriz3.agregar(b,a,"")
+                except:
+                    continue
+    
+    def Diferencia_simetrica(self,Matriz1,Matriz2,Matriz3,filas,columnas):
+        for a in range(int(filas)):
+            for b in range(int(columnas)):
+                try:
+                    if (Matriz1.getDato(b,a)=="*" and Matriz2.getDato(b,a)!="*") or (Matriz1.getDato(b,a)!="*" and Matriz2.getDato(b,a)=="*"):
+                        Matriz3.agregar(b,a,"*")
+                    else:
+                        Matriz3.agregar(b,a,"")
+                except:
+                    continue
+
 
     def cargar_matriz2(self,archivo,nombre1,nombre2,valor):
         matrices=archivo.getElementsByTagName("matriz")
@@ -514,13 +536,13 @@ class Eventos:
         elif valor==3:
             Matriz3=Lista_ortogonal()
             Matriz3.crear(nf,nc)
-            event.union(Matriz1,Matriz2,Matriz3,nf,nc)
+            event.Diferencia(Matriz1,Matriz2,Matriz3,nf,nc)
             t = threading.Thread(target=event.ventana2("ventana_matriz","Union",filas,columnas,Matriz1,filas2,columnas2,Matriz2,Matriz3,nf,nc)) 
             t.start()
         elif valor==4:
             Matriz3=Lista_ortogonal()
             Matriz3.crear(nf,nc)
-            event.union(Matriz1,Matriz2,Matriz3,nf,nc)
+            event.Diferencia_simetrica(Matriz1,Matriz2,Matriz3,nf,nc)
             t = threading.Thread(target=event.ventana2("ventana_matriz","Union",filas,columnas,Matriz1,filas2,columnas2,Matriz2,Matriz3,nf,nc)) 
             t.start()
         
