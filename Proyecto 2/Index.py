@@ -33,7 +33,7 @@ class Principal:
         Radiobutton(panel3,text="Diferencia simétrica",variable=self.opcion_radioboton2, value=4).grid(column=0, row=4, sticky="W")
 
         #Boton opciones de dos imagenes //Panel 3
-        ttk.Button(panel3, text="Continuar").grid(row=5,columnspan=2)
+        ttk.Button(panel3, text="Continuar",command=event.boton_dos_imagenes).grid(row=5,columnspan=2)
 
         #Input operaciones de dos imagenes //panel3
         Label(panel3,text='Ingrese el nombre de la matriz 1').grid(row=1,column=6)
@@ -128,7 +128,59 @@ class form_new_matriz():
                 cont_fila+=1
             cont_fila=0
             cont_columna+=1
+    
+class form_new_matriz2():
+    def __init__(self,ventana,es,filas,columnas,lista,filas2,columnas2,lista2,lista3,filas3,columnas3):
+        self.vent2 = ventana
+        self.vent2.title(f'Operacion {es}')
 
+        #panel4 tabla
+        panel4 = LabelFrame(self.vent2,text=f'Matriz 1')
+        panel4.grid(row=3,column=5 ,pady=20,columnspan=3)
+        cont_fila=0
+        cont_columna=0
+        for c in range(int(filas)):
+            for a in range(int(columnas)):
+                celda = Entry(panel4, width=5)
+                celda.grid(row=cont_columna, column=cont_fila)
+                celda.insert(0, lista.getDato(cont_fila,cont_columna))
+                tipo=tkFont.Font(family="Arial",size="120",weight="bold",slant="italic")
+                celda.configure(font=tipo)
+                cont_fila+=1
+            cont_fila=0
+            cont_columna+=1
+
+        #panel5 tabla
+        panel5 = LabelFrame(self.vent2,text=f'Matriz 2')
+        panel5.grid(row=6,column=5 ,pady=20,columnspan=3)
+        cont_fila=0
+        cont_columna=0
+        for c in range(int(filas2)):
+            for a in range(int(columnas2)):
+                celda = Entry(panel5, width=5)
+                celda.grid(row=cont_columna, column=cont_fila)
+                celda.insert(0, lista2.getDato(cont_fila,cont_columna))
+                tipo=tkFont.Font(family="Arial",size="120",weight="bold",slant="italic")
+                celda.configure(font=tipo)
+                cont_fila+=1
+            cont_fila=0
+            cont_columna+=1
+
+        #Panel6 tabla
+        panel6 = LabelFrame(self.vent2,text=f'Matriz operada')
+        panel6.grid(row=9,column=5 ,pady=20,columnspan=3)
+        cont_fila=0
+        cont_columna=0
+        for c in range(int(filas3)):
+            for a in range(int(columnas3)):
+                celda = Entry(panel6, width=5)
+                celda.grid(row=cont_columna, column=cont_fila)
+                celda.insert(0, lista3.getDato(cont_fila,cont_columna))
+                tipo=tkFont.Font(family="Arial",size="120",weight="bold",slant="italic")
+                celda.configure(font=tipo)
+                cont_fila+=1
+            cont_fila=0
+            cont_columna+=1
         
 
 class Eventos:
@@ -146,7 +198,9 @@ class Eventos:
         archivo=minidom.parse(aplicacion.ruta.get())
         Matriz1=event.cargar_matriz(archivo,aplicacion.op1_matriz.get(),aplicacion.opcion_radioboton.get())
         
-
+    def boton_dos_imagenes(self):
+        archivo=minidom.parse(aplicacion.ruta.get())
+        event.cargar_matriz2(archivo,aplicacion.op2_matriz1.get(),aplicacion.op2_matriz2.get(),aplicacion.opcion_radioboton2.get())
         
     def Rotacion_H_1I(self,filas,columnas,Matriz1,Matriz2):
         cont_x=0
@@ -289,7 +343,7 @@ class Eventos:
                         #print(f"z:{z}")
                         for a in z:
                             #print(f"a:{a}")
-                            if a=="_":
+                            if a=="_" or a=="-":
                                 a=""
                             Matriz1.agregar(cont_fila,cont_columna,a)
                             cont_fila+=1      
@@ -354,8 +408,116 @@ class Eventos:
         aplicacion1=form_new_matriz(nombre,es,filas,columnas,lista,filas2,columnas2,lista2)
         nombre.mainloop()
 
-    
+    def union(self,Matriz1,Matriz2,Matriz3,filas,columnas):
+        for a in range(int(filas)):
+            for b in range(int(columnas)):
+                try:
+                    if Matriz1.getDato(b,a)=="*" or Matriz2.getDato(b,a)=="*":
+                        Matriz3.agregar(b,a,"*")
+                    else:
+                        Matriz3.agregar(b,a,"")
+                except:
+                    continue
+                
 
+    def cargar_matriz2(self,archivo,nombre1,nombre2,valor):
+        matrices=archivo.getElementsByTagName("matriz")
+        imagen=""
+        filas=""
+        columnas=""
+        imagen2=""
+        filas2=""
+        columnas2=""
+        temp=archivo.getElementsByTagName("matriz")
+        for matriz in matrices:
+            if nombre1==matriz.getElementsByTagName("nombre")[0].firstChild.data:
+                filas=matriz.getElementsByTagName("filas")[0].firstChild.data
+                columnas=matriz.getElementsByTagName("columnas")[0].firstChild.data
+                imagen=matriz.getElementsByTagName("imagen")[0].firstChild.data
+                Matriz1=Lista_ortogonal()
+                Matriz1.crear(filas,columnas)
+                x=imagen.splitlines()
+                cont_fila=0
+                cont_columna=0
+                for y in x:
+                    z=y.strip()
+                    if z!="":
+                        #print(f"z:{z}")
+                        for a in z:
+                            #print(f"a:{a}")
+                            if a=="_" or a=="-":
+                                a=""
+                            Matriz1.agregar(cont_fila,cont_columna,a)
+                            cont_fila+=1      
+                    else:
+                        cont_columna-=1
+                    cont_fila=0
+                    cont_columna+=1
+            elif nombre2==matriz.getElementsByTagName("nombre")[0].firstChild.data:
+                filas2=matriz.getElementsByTagName("filas")[0].firstChild.data
+                columnas2=matriz.getElementsByTagName("columnas")[0].firstChild.data
+                imagen2=matriz.getElementsByTagName("imagen")[0].firstChild.data
+                Matriz2=Lista_ortogonal()
+                Matriz2.crear(filas2,columnas2)
+                q=imagen2.splitlines()
+                cont_fila=0
+                cont_columna=0
+                for u in q:
+                    m=u.strip()
+                    if m!="":
+                        #print(f"z:{z}")
+                        for d in m:
+                            #print(f"a:{a}")
+                            if d=="_" or d=="-":
+                                d=""
+                            Matriz2.agregar(cont_fila,cont_columna,d)
+                            cont_fila+=1      
+                    else:
+                        cont_columna-=1
+                    cont_fila=0
+                    cont_columna+=1
+        nc=0
+        nf=0
+        if columnas>columnas2 or columnas==columnas2:
+            nc=columnas
+        elif columnas<columnas2:
+            nc=columnas2
+
+        if filas>filas2 or filas==filas2:
+            nf=filas
+        elif filas<filas2:
+            nf=filas2
+             
+        if valor==1:
+            Matriz3=Lista_ortogonal()
+            Matriz3.crear(nf,nc)
+            event.union(Matriz1,Matriz2,Matriz3,nf,nc)
+            t = threading.Thread(target=event.ventana2("ventana_matriz","Union",filas,columnas,Matriz1,filas2,columnas2,Matriz2,Matriz3,nf,nc)) 
+            t.start()
+        elif valor==2:
+            Matriz3=Lista_ortogonal()
+            Matriz3.crear(nf,nc)
+            event.union(Matriz1,Matriz2,Matriz3,nf,nc)
+            t = threading.Thread(target=event.ventana2("ventana_matriz","Union",filas,columnas,Matriz1,filas2,columnas2,Matriz2,Matriz3,nf,nc)) 
+            t.start()
+        elif valor==3:
+            Matriz3=Lista_ortogonal()
+            Matriz3.crear(nf,nc)
+            event.union(Matriz1,Matriz2,Matriz3,nf,nc)
+            t = threading.Thread(target=event.ventana2("ventana_matriz","Union",filas,columnas,Matriz1,filas2,columnas2,Matriz2,Matriz3,nf,nc)) 
+            t.start()
+        elif valor==4:
+            Matriz3=Lista_ortogonal()
+            Matriz3.crear(nf,nc)
+            event.union(Matriz1,Matriz2,Matriz3,nf,nc)
+            t = threading.Thread(target=event.ventana2("ventana_matriz","Union",filas,columnas,Matriz1,filas2,columnas2,Matriz2,Matriz3,nf,nc)) 
+            t.start()
+        
+                
+    def ventana2(self,nombre,es,filas,columnas,lista,filas2,columnas2,lista2,lista3,filas3,columnas3):
+        nombre=Tk()
+        aplicacion2=form_new_matriz2(nombre,es,filas,columnas,lista,filas2,columnas2,lista2,lista3,filas3,columnas3)
+        nombre.mainloop()
 
 class nodo():
 
