@@ -28,8 +28,10 @@ class Principal:
         panel3 = LabelFrame(self.vent,text='Operaciones con dos iamgenes imagen')
         panel3.grid(row=4,column=0 ,pady=20,columnspan=3)
 
-        #Boton ayuda 
-        ttk.Button(self.vent, text="Ayuda",command=event.ayuda).grid(row=0,column=10)
+        #Boton Informacion
+        ttk.Button(self.vent, text="Informacion",command=event.info).grid(row=1,column=10)
+        #Boton documentacion 
+        ttk.Button(self.vent, text="Documentacion",command=event.doc).grid(row=0,column=10)
         #Boton reporte 
         ttk.Button(self.vent, text="Reporte",command=event.reporte).grid(row=0,column=9)
         
@@ -105,6 +107,7 @@ class form_new_matriz():
         self.vent2 = ventana
         self.vent2.title(f'Matriz {es}')
 
+
         #panel4 tabla
         panel4 = LabelFrame(self.vent2,text=f'Matriz selecionada')
         panel4.grid(row=3,column=5 ,pady=20,columnspan=3)
@@ -120,6 +123,7 @@ class form_new_matriz():
                 cont_fila+=1
             cont_fila=0
             cont_columna+=1
+
 
         #panel5 tabla
         panel5 = LabelFrame(self.vent2,text=f'Matriz operada')
@@ -189,35 +193,47 @@ class form_new_matriz2():
                 cont_fila+=1
             cont_fila=0
             cont_columna+=1
-        
+
+class Cinfo():
+    def __init__(self,ventana):    
+        self.vent = ventana
+        self.vent.title(f'Estudiante')
+        #panel1 Info
+        panel1 = LabelFrame(self.vent,text='Informacion del estudiante')
+        panel1.grid(row=0,column=0,columnspan=3)
+        mensaje="<><><><><><><><><><><><><><><><><><><><><><><><> \nNombre: Angel Geovany Aragón Pérez\nCarnet: 201901055\nIntroduccion a la programacion y computacion 2 seccion 'A'\nIngenieria en Ciencias y Sistemas\n4to Semestre \n<><><><><><><><><><><><><><><><><><><><><><><><>"
+        Label(panel1,text=mensaje).grid(row=0,column=0)
+
 
 class Eventos:
 
     def leer_ruta(self):
         rut= str(aplicacion.ruta.get())
-        #try:
-        archivo = minidom.parse(rut)
-        matrices=archivo.getElementsByTagName("matriz")
-        for matriz in matrices:
-            nombre=matriz.getElementsByTagName("nombre")[0].firstChild.data
-            imagen=matriz.getElementsByTagName("imagen")[0].firstChild.data
-            x=imagen.splitlines()
-            vacios=0
-            llenos=0
-            for y in x:
-                z=y.strip()
-                if z!="":
-                    for a in z:
-                        if a=="_" or a=="-":
-                            vacios+=1
-                        else:
-                            llenos+=1
+        try:
+            archivo = minidom.parse(rut)
+            matrices=archivo.getElementsByTagName("matriz")
+            for matriz in matrices:
+                nombre=matriz.getElementsByTagName("nombre")[0].firstChild.data
+                imagen=matriz.getElementsByTagName("imagen")[0].firstChild.data
+                x=imagen.splitlines()
+                vacios=0
+                llenos=0
+                for y in x:
+                    z=y.strip()
+                    if z!="":
+                        for a in z:
+                            if a=="_" or a=="-":
+                                vacios+=1
+                            else:
+                                llenos+=1
+                fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+                Report.agregar_ultimo(fecha,nombre,llenos,vacios)
+            #Report.recorrer()
+            print("Archivo leido correctamente")
+        except:
             fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
-            Report.agregar_ultimo(fecha,nombre,llenos,vacios)
-        #Report.recorrer()
-        print("Archivo leido correctamente")
-        #except:
-        #print("No se pudo abrir el documento")
+            Report3.agregar_ultimo(fecha,"No se pudo abrir el documento","")
+            print("No se pudo abrir el documento")
 
 
     def boton_una_imagen(self):
@@ -228,9 +244,64 @@ class Eventos:
         archivo=minidom.parse(aplicacion.ruta.get())
         event.cargar_matriz2(archivo,aplicacion.op2_matriz1.get(),aplicacion.op2_matriz2.get(),aplicacion.opcion_radioboton2.get())
 
-    def ayuda(self):
-        print("sot la ayuda")
+    def info(self):
+        vent=Tk()
+        app=Cinfo(vent)
+        vent.mainloop()
     
+    def doc(self):
+        try:
+            nombreArchivo = 'C:/Users/angge/OneDrive/Documentos/GitHub/IPC2_Proyecto2_201901055/Documentacion/[IPC2]Proyecto_2.pdf'
+            webbrowser.open_new_tab(nombreArchivo)
+        except:
+            fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+            Report3.agregar_ultimo(fecha,"No se pudo abrir la documentacion","")
+            print("no se pudo abrir")
+
+    def crear_grafica(self,name,Matriz,filas,columnas):
+        
+        ABC=Lista_ortogonal()
+        ABC.crear(filas,columnas)
+
+        for a in range(int(filas)):
+            for b in range(int(columnas)):
+                tex=f"A{a}{b}"
+                ABC.agregar(b,a,tex)
+        archivo=open(f'{name}.dot','w')
+        contenido="digraph Matriz{"
+
+        for a in range(int(filas)):
+            for b in range(int(columnas)):
+                x=f"""
+                {ABC.getDato(b,a)}[label="{Matriz.getDato(b,a)}" style="filled" fillcolor="#92E192" shape="box"]
+                """
+                contenido+=x
+                
+        
+        for a in range(int(filas)):
+            for b in range(int(columnas)):
+                if b==int(columnas):
+                    continue
+                else:
+                    if ABC.getDato(b,a+1)==None:
+                        continue
+                    x=f"""
+                    {ABC.getDato(b,a)}->{ABC.getDato(b,a+1)}
+                    """
+                    contenido+=x
+            
+            
+
+        contenido+=x+"}"
+        archivo.write(contenido)
+        archivo.close()
+        try:
+            os.system(f'dot -Tpng {name}.dot -o {name}.png')
+        except expression as identifier:
+            fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+            Report3.agregar_ultimo(fecha,"No se pudo realizar la grafica","")
+        
+
     def reporte(self):
         f = open('REPORTE.html','w')
         mensaje="""
@@ -264,10 +335,23 @@ class Eventos:
         for e in range(int(Report2.tamaño())):
             temp_mensaje=f"""
                     <TR>
-                        <TD>{e+1}</TD> <TD>{Report2.buscar(e,0)}</TD> <TD>{Report2.buscar(e,1)}</TD><TD>{Report2.buscar(e,2)}</TD>
+                        <TD>{e+1}</TD> <TD>{Report2.buscar(e,0)}</TD> <TD>{Report2.buscar(e,2)}</TD><TD>{Report2.buscar(e,1)}</TD>
                     </TR>"""
             mensaje4+=temp_mensaje
-
+        mensaje4+="""
+                </TABLE>
+                <h1>REPORTE ERRORES</h1>
+                <TABLE BORDER>
+                    <TR>
+                        <TH>No</TH> <TH>Fecha</TH> <TH>Descripcion</TH>
+                    </TR>
+        """
+        for e in range(int(Report3.tamaño())):
+            temp_mensaje=f"""
+                    <TR>
+                        <TD>{e+1}</TD> <TD>{Report3.buscar(e,0)}</TD> <TD>{Report3.buscar(e,2)}</TD>
+                    </TR>"""
+            mensaje4+=temp_mensaje
         mensaje3="""
                 </TABLE>
             </body>
@@ -281,6 +365,8 @@ class Eventos:
             nombreArchivo = 'C:/Users/angge/OneDrive/Documentos/GitHub/IPC2_Proyecto2_201901055/Proyecto 2/REPORTE.html'
             webbrowser.open_new_tab(nombreArchivo)
         except :
+            fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+            Report.agregar_ultimo(fecha,"no se pudo abrir automaticamente el reporte")
             print("no se pudo abrir automaticamente")
 
 
@@ -435,70 +521,119 @@ class Eventos:
                 
                 
         if valor==1:
-            Matriz2=Lista_ortogonal()
-            Matriz2.crear(filas,columnas)
-            event.Rotacion_H_1I(filas,columnas,Matriz1,Matriz2)
-            fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
-            Report2.agregar_ultimo(fecha,"Rotación horizontal",nombre)
-            t = threading.Thread(target=event.ventana("ventana_matriz",f'Matriz seleccionada:  "{nombre}" ',filas,columnas,Matriz1,filas,columnas,Matriz2)) 
-            t.start()
+            try:
+                Matriz2=Lista_ortogonal()
+                Matriz2.crear(filas,columnas)
+                event.Rotacion_H_1I(filas,columnas,Matriz1,Matriz2)
+                fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+                Report2.agregar_ultimo(fecha,"Rotación horizontal",nombre)
+                event.crear_grafica("Matriz_selecionada",Matriz1,filas,columnas)
+                event.crear_grafica("Matriz_operada",Matriz2,filas,columnas)
+                t = threading.Thread(target=event.ventana("ventana_matriz",f'Matriz seleccionada:  "{nombre}" ',filas,columnas,Matriz1,filas,columnas,Matriz2)) 
+                t.start()
+            except:
+                fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+                Report3.agregar_ultimo(fecha,"Error al realizar rotacion horizontal para una imagen","")
+        
+            
         elif valor==2:
-            Matriz2=Lista_ortogonal()
-            Matriz2.crear(filas,columnas)
-            event.Rotacion_V_1I(filas,columnas,Matriz1,Matriz2)
-            fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
-            Report2.agregar_ultimo(fecha,"Rotación vertical",nombre)
-            t = threading.Thread(target=event.ventana("ventana_matriz",f'Matriz seleccionada:  "{nombre}" ',filas,columnas,Matriz1,filas,columnas,Matriz2)) 
-            t.start()
+            try:
+                Matriz2=Lista_ortogonal()
+                Matriz2.crear(filas,columnas)
+                event.Rotacion_V_1I(filas,columnas,Matriz1,Matriz2)
+                fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+                Report2.agregar_ultimo(fecha,"Rotación vertical",nombre)
+                event.crear_grafica("Matriz_selecionada",Matriz1,filas,columnas)
+                event.crear_grafica("Matriz_operada",Matriz2,filas,columnas)
+                t = threading.Thread(target=event.ventana("ventana_matriz",f'Matriz seleccionada:  "{nombre}" ',filas,columnas,Matriz1,filas,columnas,Matriz2)) 
+                t.start()
+            except:
+                fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+                Report3.agregar_ultimo(fecha,"Error al realizar rotacion vertical para una imagen","")
         elif valor==3:
-            Matriz2=Lista_ortogonal()
-            Matriz2.crear(columnas,filas)
-            event.Traspuesta_1I(columnas,filas,Matriz1,Matriz2)
-            fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
-            Report2.agregar_ultimo(fecha,"Transpuesta",nombre)
-            t = threading.Thread(target=event.ventana("ventana_matriz",f'Matriz seleccionada:  "{nombre}" ',filas,columnas,Matriz1,columnas,filas,Matriz2)) 
-            t.start()
+            try:
+                Matriz2=Lista_ortogonal()
+                Matriz2.crear(columnas,filas)
+                event.Traspuesta_1I(columnas,filas,Matriz1,Matriz2)
+                fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+                Report2.agregar_ultimo(fecha,"Transpuesta",nombre)
+                event.crear_grafica("Matriz_selecionada",Matriz1,filas,columnas)
+                event.crear_grafica("Matriz_operada",Matriz2,columnas,filas)
+                t = threading.Thread(target=event.ventana("ventana_matriz",f'Matriz seleccionada:  "{nombre}" ',filas,columnas,Matriz1,columnas,filas,Matriz2)) 
+                t.start()
+            except:
+                fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+                Report3.agregar_ultimo(fecha,"Error al realizar la traspuesta para una imagen","")
         elif valor==4:
-            Matriz2=Lista_ortogonal()
-            Matriz2.crear(filas,columnas)
-            event.Limpiar_1I(filas,columnas,Matriz1,Matriz2)
-            fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
-            Report2.agregar_ultimo(fecha,"Limpiar zona",nombre)
-            t = threading.Thread(target=event.ventana("ventana_matriz",f'Matriz seleccionada:  "{nombre}" ',filas,columnas,Matriz1,filas,columnas,Matriz2)) 
-            t.start()
+            try:
+                Matriz2=Lista_ortogonal()
+                Matriz2.crear(filas,columnas)
+                event.Limpiar_1I(filas,columnas,Matriz1,Matriz2)
+                fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+                Report2.agregar_ultimo(fecha,"Limpiar zona",nombre)
+                event.crear_grafica("Matriz_selecionada",Matriz1,filas,columnas)
+                event.crear_grafica("Matriz_operada",Matriz2,filas,columnas)
+                t = threading.Thread(target=event.ventana("ventana_matriz",f'Matriz seleccionada:  "{nombre}" ',filas,columnas,Matriz1,filas,columnas,Matriz2)) 
+                t.start()
+            except:
+                fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+                Report3.agregar_ultimo(fecha,"Error al realizar la operacion limpiar para una imagen","")    
         elif valor==5:
-            Matriz2=Lista_ortogonal()
-            Matriz2.crear(filas,columnas)
-            event.agregar_FH(filas,columnas,Matriz1,Matriz2)
-            fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
-            Report2.agregar_ultimo(fecha,"Agregar línea horizontal",nombre)
-            t = threading.Thread(target=event.ventana("ventana_matriz",f'Matriz seleccionada:  "{nombre}" ',filas,columnas,Matriz1,filas,columnas,Matriz2)) 
-            t.start()
+            try:
+                Matriz2=Lista_ortogonal()
+                Matriz2.crear(filas,columnas)
+                event.agregar_FH(filas,columnas,Matriz1,Matriz2)
+                fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+                Report2.agregar_ultimo(fecha,"Agregar línea horizontal",nombre)
+                event.crear_grafica("Matriz_selecionada",Matriz1,filas,columnas)
+                event.crear_grafica("Matriz_operada",Matriz2,filas,columnas)
+                t = threading.Thread(target=event.ventana("ventana_matriz",f'Matriz seleccionada:  "{nombre}" ',filas,columnas,Matriz1,filas,columnas,Matriz2)) 
+                t.start()
+            except:
+                fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+                Report3.agregar_ultimo(fecha,"Error al realizar la operacion de agregar una fila horizontal para una imagen","")
         elif valor==6:
-            Matriz2=Lista_ortogonal()
-            Matriz2.crear(filas,columnas)
-            event.agregar_FV(filas,columnas,Matriz1,Matriz2)
-            fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
-            Report2.agregar_ultimo(fecha,"Agregar línea vertical",nombre)
-            t = threading.Thread(target=event.ventana("ventana_matriz",f'Matriz seleccionada:  "{nombre}" ',filas,columnas,Matriz1,filas,columnas,Matriz2)) 
-            t.start()
+            try:
+                Matriz2=Lista_ortogonal()
+                Matriz2.crear(filas,columnas)
+                event.agregar_FV(filas,columnas,Matriz1,Matriz2)
+                fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+                Report2.agregar_ultimo(fecha,"Agregar línea vertical",nombre)
+                event.crear_grafica("Matriz_selecionada",Matriz1,filas,columnas)
+                event.crear_grafica("Matriz_operada",Matriz2,filas,columnas)
+                t = threading.Thread(target=event.ventana("ventana_matriz",f'Matriz seleccionada:  "{nombre}" ',filas,columnas,Matriz1,filas,columnas,Matriz2)) 
+                t.start()
+            except:
+                fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+                Report3.agregar_ultimo(fecha,"Error al realizar la operacion de agregar una fila vertical para una imagen","")
         elif valor==7:
-            Matriz2=Lista_ortogonal()
-            Matriz2.crear(filas,columnas)
-            event.Rectangulo_1I(filas,columnas,Matriz1,Matriz2)
-            fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
-            Report2.agregar_ultimo(fecha,"Agregar rectángulo",nombre)
-            t = threading.Thread(target=event.ventana("ventana_matriz",f'Matriz seleccionada:  "{nombre}" ',filas,columnas,Matriz1,filas,columnas,Matriz2)) 
-            t.start()
+            try:
+                Matriz2=Lista_ortogonal()
+                Matriz2.crear(filas,columnas)
+                event.Rectangulo_1I(filas,columnas,Matriz1,Matriz2)
+                fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+                Report2.agregar_ultimo(fecha,"Agregar rectángulo",nombre)
+                event.crear_grafica("Matriz_selecionada",Matriz1,filas,columnas)
+                event.crear_grafica("Matriz_operada",Matriz2,filas,columnas)
+                t = threading.Thread(target=event.ventana("ventana_matriz",f'Matriz seleccionada:  "{nombre}" ',filas,columnas,Matriz1,filas,columnas,Matriz2)) 
+                t.start()
+            except:
+                fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+                Report3.agregar_ultimo(fecha,"Error al realizar la operacion de crear un rectangulo para una imagen","")
         elif valor==8:
-            Matriz2=Lista_ortogonal()
-            Matriz2.crear(filas,columnas)
-            event.Triangulo_1I(filas,columnas,Matriz1,Matriz2)
-            fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
-            Report2.agregar_ultimo(fecha,"Agregar triángulo rectángulo",nombre)
-            t = threading.Thread(target=event.ventana("ventana_matriz",f'Matriz seleccionada:  "{nombre}" ',filas,columnas,Matriz1,filas,columnas,Matriz2)) 
-            t.start()
-      
+            try:
+                Matriz2=Lista_ortogonal()
+                Matriz2.crear(filas,columnas)
+                event.Triangulo_1I(filas,columnas,Matriz1,Matriz2)
+                fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+                Report2.agregar_ultimo(fecha,"Agregar triángulo rectángulo",nombre)
+                event.crear_grafica("Matriz_selecionada",Matriz1,filas,columnas)
+                event.crear_grafica("Matriz_operada",Matriz2,filas,columnas)
+                t = threading.Thread(target=event.ventana("ventana_matriz",f'Matriz seleccionada:  "{nombre}" ',filas,columnas,Matriz1,filas,columnas,Matriz2)) 
+                t.start()
+            except:
+                fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+                Report3.agregar_ultimo(fecha,"Error al realizar la operacion de crear un triangulo para una imagen","")
 
     def ventana(self,nombre,es,filas,columnas,lista,filas2,columnas2,lista2):
         nombre=Tk()
@@ -618,43 +753,69 @@ class Eventos:
             nf=filas2
              
         if valor==1:
-            Matriz3=Lista_ortogonal()
-            Matriz3.crear(nf,nc)
-            event.union(Matriz1,Matriz2,Matriz3,nf,nc)
-            fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
-            nombres=f"{nombre1},{nombre2}"
-            Report2.agregar_ultimo(fecha,"Union",nombres)
-            t = threading.Thread(target=event.ventana2("ventana_matriz","Union",filas,columnas,Matriz1,filas2,columnas2,Matriz2,Matriz3,nf,nc)) 
-            t.start()
+            try:
+                Matriz3=Lista_ortogonal()
+                Matriz3.crear(nf,nc)
+                event.union(Matriz1,Matriz2,Matriz3,nf,nc)
+                fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+                nombres=f"{nombre1},{nombre2}"
+                Report2.agregar_ultimo(fecha,"Union",nombres)
+                event.crear_grafica("Matriz_selecionada_1",Matriz1,filas,columnas)
+                event.crear_grafica("Matriz_selecionada_2",Matriz2,filas2,columnas2)
+                event.crear_grafica("Matriz_operada",Matriz3,nf,nc)
+                t = threading.Thread(target=event.ventana2("ventana_matriz","Union",filas,columnas,Matriz1,filas2,columnas2,Matriz2,Matriz3,nf,nc)) 
+                t.start()
+            except:
+                fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+                Report3.agregar_ultimo(fecha,"No se pudo realizar la operacion union","")
         elif valor==2:
-            Matriz3=Lista_ortogonal()
-            Matriz3.crear(nf,nc)
-            event.Interseccion(Matriz1,Matriz2,Matriz3,nf,nc)
-            fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
-            nombres=f"{nombre1},{nombre2}"
-            Report2.agregar_ultimo(fecha,"Interseccion",nombres)
-            t = threading.Thread(target=event.ventana2("ventana_matriz","Union",filas,columnas,Matriz1,filas2,columnas2,Matriz2,Matriz3,nf,nc)) 
-            t.start()
+            try:
+                Matriz3=Lista_ortogonal()
+                Matriz3.crear(nf,nc)
+                event.Interseccion(Matriz1,Matriz2,Matriz3,nf,nc)
+                fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+                nombres=f"{nombre1},{nombre2}"
+                Report2.agregar_ultimo(fecha,"Interseccion",nombres)
+                event.crear_grafica("Matriz_selecionada_1",Matriz1,filas,columnas)
+                event.crear_grafica("Matriz_selecionada_2",Matriz2,filas2,columnas2)
+                event.crear_grafica("Matriz_operada",Matriz3,nf,nc)
+                t = threading.Thread(target=event.ventana2("ventana_matriz","Union",filas,columnas,Matriz1,filas2,columnas2,Matriz2,Matriz3,nf,nc)) 
+                t.start()
+            except:
+                fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+                Report3.agregar_ultimo(fecha,"No se pudo realizar la operacion interseccion","")
         elif valor==3:
-            Matriz3=Lista_ortogonal()
-            Matriz3.crear(nf,nc)
-            event.Diferencia(Matriz1,Matriz2,Matriz3,nf,nc)
-            fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
-            nombres=f"{nombre1},{nombre2}"
-            Report2.agregar_ultimo(fecha,"Diferencia",nombres)
-            t = threading.Thread(target=event.ventana2("ventana_matriz","Union",filas,columnas,Matriz1,filas2,columnas2,Matriz2,Matriz3,nf,nc)) 
-            t.start()
-
+            try:
+                Matriz3=Lista_ortogonal()
+                Matriz3.crear(nf,nc)
+                event.Diferencia(Matriz1,Matriz2,Matriz3,nf,nc)
+                fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+                nombres=f"{nombre1},{nombre2}"
+                Report2.agregar_ultimo(fecha,"Diferencia",nombres)
+                event.crear_grafica("Matriz_selecionada_1",Matriz1,filas,columnas)
+                event.crear_grafica("Matriz_selecionada_2",Matriz2,filas2,columnas2)
+                event.crear_grafica("Matriz_operada",Matriz3,nf,nc)
+                t = threading.Thread(target=event.ventana2("ventana_matriz","Union",filas,columnas,Matriz1,filas2,columnas2,Matriz2,Matriz3,nf,nc)) 
+                t.start()
+            except:
+                fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+                Report3.agregar_ultimo(fecha,"No se pudo realizar la operacion 'Diferencia'","")
         elif valor==4:
-            Matriz3=Lista_ortogonal()
-            Matriz3.crear(nf,nc)
-            event.Diferencia_simetrica(Matriz1,Matriz2,Matriz3,nf,nc)
-            fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
-            nombres=f"{nombre1},{nombre2}"
-            Report2.agregar_ultimo(fecha,"Diferencia_simetrica",nombres)
-            t = threading.Thread(target=event.ventana2("ventana_matriz","Union",filas,columnas,Matriz1,filas2,columnas2,Matriz2,Matriz3,nf,nc)) 
-            t.start()
-            
+            try:
+                Matriz3=Lista_ortogonal()
+                Matriz3.crear(nf,nc)
+                event.Diferencia_simetrica(Matriz1,Matriz2,Matriz3,nf,nc)
+                fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+                nombres=f"{nombre1},{nombre2}"
+                Report2.agregar_ultimo(fecha,"Diferencia_simetrica",nombres)
+                event.crear_grafica("Matriz_selecionada_1",Matriz1,filas,columnas)
+                event.crear_grafica("Matriz_selecionada_2",Matriz2,filas2,columnas2)
+                event.crear_grafica("Matriz_operada",Matriz3,nf,nc)
+                t = threading.Thread(target=event.ventana2("ventana_matriz","Union",filas,columnas,Matriz1,filas2,columnas2,Matriz2,Matriz3,nf,nc)) 
+                t.start()
+            except:
+                fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+                Report3.agregar_ultimo(fecha,"No se pudo realizar la operacion 'Diferencia Simetrica'","")
         
                 
     def ventana2(self,nombre,es,filas,columnas,lista,filas2,columnas2,lista2,lista3,filas3,columnas3):
@@ -768,7 +929,7 @@ class Lista_ortogonal():
         temp_derecha=nodo(None)
         for a in range(int(fila)):
             for b in range(int(columna)):
-                nuevo = nodo(f"*{a+1},{b+1}")
+                nuevo = nodo(f"{a+1},{b+1}")
                 #print(nuevo.dato)
                 nuevo.abajo=None
                 nuevo.derecha=None
@@ -924,7 +1085,7 @@ class Lista_Circular2(object):
 event=Eventos()
 Report=Lista_Circular()
 Report2=Lista_Circular2()
-
+Report3=Lista_Circular2()
 
 
 if __name__=='__main__':
