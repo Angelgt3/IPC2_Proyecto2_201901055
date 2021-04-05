@@ -1,21 +1,6 @@
 from tkinter import ttk
 from tkinter import *
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-class Product:
-
-    def __init__(self,ventana):
-        self.wind = ventana
-        self.wind.title('Proyecto 2')
-
-if __name__=='__main__':
-    ventana=Tk()
-    aplicacion=Product(ventana)
-=======
-=======
 from datetime import datetime
->>>>>>> develop
 import tkinter.font as tkFont
 from xml.dom import minidom
 import xml.etree.ElementTree as ET 
@@ -1106,5 +1091,4 @@ Report3=Lista_Circular2()
 if __name__=='__main__':
     ventana=Tk()
     aplicacion=Principal(ventana)
->>>>>>> develop
     ventana.mainloop()
