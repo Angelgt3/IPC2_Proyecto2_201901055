@@ -1,6 +1,7 @@
 from tkinter import ttk
 from tkinter import *
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 class Product:
 
@@ -12,10 +13,16 @@ if __name__=='__main__':
     ventana=Tk()
     aplicacion=Product(ventana)
 =======
+=======
+from datetime import datetime
+>>>>>>> develop
 import tkinter.font as tkFont
 from xml.dom import minidom
 import xml.etree.ElementTree as ET 
 import threading 
+import webbrowser
+import io
+import os
 
 
 class Principal:
@@ -36,7 +43,13 @@ class Principal:
         panel3 = LabelFrame(self.vent,text='Operaciones con dos iamgenes imagen')
         panel3.grid(row=4,column=0 ,pady=20,columnspan=3)
 
-
+        #Boton Informacion
+        ttk.Button(self.vent, text="Informacion",command=event.info).grid(row=1,column=10)
+        #Boton documentacion 
+        ttk.Button(self.vent, text="Documentacion",command=event.doc).grid(row=0,column=10)
+        #Boton reporte 
+        ttk.Button(self.vent, text="Reporte",command=event.reporte).grid(row=0,column=9)
+        
         #botones radiales //panel 3
         self.opcion_radioboton2=IntVar()
         Radiobutton(panel3,text="Union",variable=self.opcion_radioboton2, value=1).grid(column=0, row=1, sticky="W")
@@ -45,7 +58,7 @@ class Principal:
         Radiobutton(panel3,text="Diferencia simétrica",variable=self.opcion_radioboton2, value=4).grid(column=0, row=4, sticky="W")
 
         #Boton opciones de dos imagenes //Panel 3
-        ttk.Button(panel3, text="Continuar").grid(row=5,columnspan=2)
+        ttk.Button(panel3, text="Continuar",command=event.boton_dos_imagenes).grid(row=5,columnspan=2)
 
         #Input operaciones de dos imagenes //panel3
         Label(panel3,text='Ingrese el nombre de la matriz 1').grid(row=1,column=6)
@@ -109,6 +122,7 @@ class form_new_matriz():
         self.vent2 = ventana
         self.vent2.title(f'Matriz {es}')
 
+
         #panel4 tabla
         panel4 = LabelFrame(self.vent2,text=f'Matriz selecionada')
         panel4.grid(row=3,column=5 ,pady=20,columnspan=3)
@@ -125,6 +139,7 @@ class form_new_matriz():
             cont_fila=0
             cont_columna+=1
 
+
         #panel5 tabla
         panel5 = LabelFrame(self.vent2,text=f'Matriz operada')
         panel5.grid(row=6,column=5 ,pady=20,columnspan=3)
@@ -140,8 +155,70 @@ class form_new_matriz():
                 cont_fila+=1
             cont_fila=0
             cont_columna+=1
+    
+class form_new_matriz2():
+    def __init__(self,ventana,es,filas,columnas,lista,filas2,columnas2,lista2,lista3,filas3,columnas3):
+        self.vent2 = ventana
+        self.vent2.title(f'Operacion {es}')
 
-        
+        #panel4 tabla
+        panel4 = LabelFrame(self.vent2,text=f'Matriz 1')
+        panel4.grid(row=3,column=5 ,pady=20,columnspan=3)
+        cont_fila=0
+        cont_columna=0
+        for c in range(int(filas)):
+            for a in range(int(columnas)):
+                celda = Entry(panel4, width=5)
+                celda.grid(row=cont_columna, column=cont_fila)
+                celda.insert(0, lista.getDato(cont_fila,cont_columna))
+                tipo=tkFont.Font(family="Arial",size="120",weight="bold",slant="italic")
+                celda.configure(font=tipo)
+                cont_fila+=1
+            cont_fila=0
+            cont_columna+=1
+
+        #panel5 tabla
+        panel5 = LabelFrame(self.vent2,text=f'Matriz 2')
+        panel5.grid(row=6,column=5 ,pady=20,columnspan=3)
+        cont_fila=0
+        cont_columna=0
+        for c in range(int(filas2)):
+            for a in range(int(columnas2)):
+                celda = Entry(panel5, width=5)
+                celda.grid(row=cont_columna, column=cont_fila)
+                celda.insert(0, lista2.getDato(cont_fila,cont_columna))
+                tipo=tkFont.Font(family="Arial",size="120",weight="bold",slant="italic")
+                celda.configure(font=tipo)
+                cont_fila+=1
+            cont_fila=0
+            cont_columna+=1
+
+        #Panel6 tabla
+        panel6 = LabelFrame(self.vent2,text=f'Matriz operada')
+        panel6.grid(row=9,column=5 ,pady=20,columnspan=3)
+        cont_fila=0
+        cont_columna=0
+        for c in range(int(filas3)):
+            for a in range(int(columnas3)):
+                celda = Entry(panel6, width=5)
+                celda.grid(row=cont_columna, column=cont_fila)
+                celda.insert(0, lista3.getDato(cont_fila,cont_columna))
+                tipo=tkFont.Font(family="Arial",size="120",weight="bold",slant="italic")
+                celda.configure(font=tipo)
+                cont_fila+=1
+            cont_fila=0
+            cont_columna+=1
+
+class Cinfo():
+    def __init__(self,ventana):    
+        self.vent = ventana
+        self.vent.title(f'Estudiante')
+        #panel1 Info
+        panel1 = LabelFrame(self.vent,text='Informacion del estudiante')
+        panel1.grid(row=0,column=0,columnspan=3)
+        mensaje="<><><><><><><><><><><><><><><><><><><><><><><><> \nNombre: Angel Geovany Aragón Pérez\nCarnet: 201901055\nIntroduccion a la programacion y computacion 2 seccion 'A'\nIngenieria en Ciencias y Sistemas\n4to Semestre \n<><><><><><><><><><><><><><><><><><><><><><><><>"
+        Label(panel1,text=mensaje).grid(row=0,column=0)
+
 
 class Eventos:
 
@@ -149,8 +226,28 @@ class Eventos:
         rut= str(aplicacion.ruta.get())
         try:
             archivo = minidom.parse(rut)
+            matrices=archivo.getElementsByTagName("matriz")
+            for matriz in matrices:
+                nombre=matriz.getElementsByTagName("nombre")[0].firstChild.data
+                imagen=matriz.getElementsByTagName("imagen")[0].firstChild.data
+                x=imagen.splitlines()
+                vacios=0
+                llenos=0
+                for y in x:
+                    z=y.strip()
+                    if z!="":
+                        for a in z:
+                            if a=="_" or a=="-":
+                                vacios+=1
+                            else:
+                                llenos+=1
+                fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+                Report.agregar_ultimo(fecha,nombre,llenos,vacios)
+            #Report.recorrer()
             print("Archivo leido correctamente")
         except:
+            fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+            Report3.agregar_ultimo(fecha,"No se pudo abrir el documento","")
             print("No se pudo abrir el documento")
 
 
@@ -158,8 +255,136 @@ class Eventos:
         archivo=minidom.parse(aplicacion.ruta.get())
         Matriz1=event.cargar_matriz(archivo,aplicacion.op1_matriz.get(),aplicacion.opcion_radioboton.get())
         
+    def boton_dos_imagenes(self):
+        archivo=minidom.parse(aplicacion.ruta.get())
+        event.cargar_matriz2(archivo,aplicacion.op2_matriz1.get(),aplicacion.op2_matriz2.get(),aplicacion.opcion_radioboton2.get())
 
+    def info(self):
+        vent=Tk()
+        app=Cinfo(vent)
+        vent.mainloop()
+    
+    def doc(self):
+        try:
+            nombreArchivo = 'C:/Users/angge/OneDrive/Documentos/GitHub/IPC2_Proyecto2_201901055/Documentacion/Documentacion_IPC2_Proyecto2.pdf'
+            webbrowser.open_new_tab(nombreArchivo)
+        except:
+            fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+            Report3.agregar_ultimo(fecha,"No se pudo abrir la documentacion","")
+            print("no se pudo abrir")
+
+    def crear_grafica(self,name,Matriz,filas,columnas):
         
+        ABC=Lista_ortogonal()
+        ABC.crear(filas,columnas)
+
+        for a in range(int(filas)):
+            for b in range(int(columnas)):
+                tex=f"A{a}{b}"
+                ABC.agregar(b,a,tex)
+        archivo=open(f'{name}.dot','w')
+        contenido="digraph Matriz{"
+
+        for a in range(int(filas)):
+            for b in range(int(columnas)):
+                x=f"""
+                {ABC.getDato(b,a)}[label="{Matriz.getDato(b,a)}" style="filled" fillcolor="#92E192" shape="box"]
+                """
+                contenido+=x
+                
+        
+        for a in range(int(filas)):
+            for b in range(int(columnas)):
+                if b==int(columnas):
+                    continue
+                else:
+                    if ABC.getDato(b,a+1)==None:
+                        continue
+                    x=f"""
+                    {ABC.getDato(b,a)}->{ABC.getDato(b,a+1)}
+                    """
+                    contenido+=x
+            
+            
+
+        contenido+=x+"}"
+        archivo.write(contenido)
+        archivo.close()
+        try:
+            os.system(f'dot -Tpng {name}.dot -o {name}.png')
+        except expression as identifier:
+            fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+            Report3.agregar_ultimo(fecha,"No se pudo realizar la grafica","")
+        
+
+    def reporte(self):
+        f = open('REPORTE.html','w')
+        mensaje="""
+        <html>
+            <head><title>REPORTE</title></head>
+            <body>
+                <h1>REPORTE MATRICES</h1>
+                <TABLE BORDER>
+                    <TR>
+                        <TH>No</TH> <TH>Fecha</TH> <TH>Nombre</TH><TH>Espacios llenos</TH><TH>Espacios vacios</TH>
+                    </TR>
+            """
+        mensaje2=""
+        n=0
+        for e in range(int(Report.tamaño())):
+            temp_mensaje=f"""
+                    <TR>
+                        <TD>{n+1}</TD> <TD>{Report.buscar(n,0)}</TD> <TD>{Report.buscar(n,1)}</TD><TD>{Report.buscar(n,2)}</TD><TD>{Report.buscar(n,3)}</TD>
+                    </TR>"""
+            mensaje2+=temp_mensaje
+            n+=1
+        
+        mensaje4="""
+                </TABLE>
+                <h1>REPORTE OPERACIONES</h1>
+                <TABLE BORDER>
+                    <TR>
+                        <TH>No</TH> <TH>Fecha</TH> <TH>Operacion</TH><TH>Nombre(s)</TH>
+                    </TR>
+            """
+        for e in range(int(Report2.tamaño())):
+            temp_mensaje=f"""
+                    <TR>
+                        <TD>{e+1}</TD> <TD>{Report2.buscar(e,0)}</TD> <TD>{Report2.buscar(e,2)}</TD><TD>{Report2.buscar(e,1)}</TD>
+                    </TR>"""
+            mensaje4+=temp_mensaje
+        mensaje4+="""
+                </TABLE>
+                <h1>REPORTE ERRORES</h1>
+                <TABLE BORDER>
+                    <TR>
+                        <TH>No</TH> <TH>Fecha</TH> <TH>Descripcion</TH>
+                    </TR>
+        """
+        for e in range(int(Report3.tamaño())):
+            temp_mensaje=f"""
+                    <TR>
+                        <TD>{e+1}</TD> <TD>{Report3.buscar(e,0)}</TD> <TD>{Report3.buscar(e,2)}</TD>
+                    </TR>"""
+            mensaje4+=temp_mensaje
+        mensaje3="""
+                </TABLE>
+            </body>
+        </html>
+                """
+        mensajefinal=mensaje+mensaje2+mensaje4+mensaje3
+        f.write(mensajefinal)
+        f.close()
+
+        try:
+            nombreArchivo = 'C:/Users/angge/OneDrive/Documentos/GitHub/IPC2_Proyecto2_201901055/Proyecto 2/REPORTE.html'
+            webbrowser.open_new_tab(nombreArchivo)
+        except :
+            fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+            Report.agregar_ultimo(fecha,"no se pudo abrir automaticamente el reporte")
+            print("no se pudo abrir automaticamente")
+
+
     def Rotacion_H_1I(self,filas,columnas,Matriz1,Matriz2):
         cont_x=0
         cont_y=int(filas)-1
@@ -280,7 +505,6 @@ class Eventos:
         imagen=""
         filas=""
         columnas=""
-        temp=archivo.getElementsByTagName("matriz")
 
         for matriz in matrices:
             if nombre==matriz.getElementsByTagName("nombre")[0].firstChild.data:
@@ -301,7 +525,7 @@ class Eventos:
                         #print(f"z:{z}")
                         for a in z:
                             #print(f"a:{a}")
-                            if a=="_":
+                            if a=="_" or a=="-":
                                 a=""
                             Matriz1.agregar(cont_fila,cont_columna,a)
                             cont_fila+=1      
@@ -312,61 +536,392 @@ class Eventos:
                 
                 
         if valor==1:
-            Matriz2=Lista_ortogonal()
-            Matriz2.crear(filas,columnas)
-            event.Rotacion_H_1I(filas,columnas,Matriz1,Matriz2)
-            t = threading.Thread(target=event.ventana("ventana_matriz",f'Matriz seleccionada:  "{nombre}" ',filas,columnas,Matriz1,filas,columnas,Matriz2)) 
-            t.start()
+            try:
+                Matriz2=Lista_ortogonal()
+                Matriz2.crear(filas,columnas)
+                event.Rotacion_H_1I(filas,columnas,Matriz1,Matriz2)
+                fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+                Report2.agregar_ultimo(fecha,"Rotación horizontal",nombre)
+                event.crear_grafica("Matriz_selecionada",Matriz1,filas,columnas)
+                event.crear_grafica("Matriz_operada",Matriz2,filas,columnas)
+                t = threading.Thread(target=event.ventana("ventana_matriz",f'Matriz seleccionada:  "{nombre}" ',filas,columnas,Matriz1,filas,columnas,Matriz2)) 
+                t.start()
+            except:
+                fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+                Report3.agregar_ultimo(fecha,"Error al realizar rotacion horizontal para una imagen","")
+        
+            
         elif valor==2:
-            Matriz2=Lista_ortogonal()
-            Matriz2.crear(filas,columnas)
-            event.Rotacion_V_1I(filas,columnas,Matriz1,Matriz2)
-            t = threading.Thread(target=event.ventana("ventana_matriz",f'Matriz seleccionada:  "{nombre}" ',filas,columnas,Matriz1,filas,columnas,Matriz2)) 
-            t.start()
+            try:
+                Matriz2=Lista_ortogonal()
+                Matriz2.crear(filas,columnas)
+                event.Rotacion_V_1I(filas,columnas,Matriz1,Matriz2)
+                fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+                Report2.agregar_ultimo(fecha,"Rotación vertical",nombre)
+                event.crear_grafica("Matriz_selecionada",Matriz1,filas,columnas)
+                event.crear_grafica("Matriz_operada",Matriz2,filas,columnas)
+                t = threading.Thread(target=event.ventana("ventana_matriz",f'Matriz seleccionada:  "{nombre}" ',filas,columnas,Matriz1,filas,columnas,Matriz2)) 
+                t.start()
+            except:
+                fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+                Report3.agregar_ultimo(fecha,"Error al realizar rotacion vertical para una imagen","")
         elif valor==3:
-            Matriz2=Lista_ortogonal()
-            Matriz2.crear(columnas,filas)
-            event.Traspuesta_1I(columnas,filas,Matriz1,Matriz2)
-            t = threading.Thread(target=event.ventana("ventana_matriz",f'Matriz seleccionada:  "{nombre}" ',filas,columnas,Matriz1,columnas,filas,Matriz2)) 
-            t.start()
+            try:
+                Matriz2=Lista_ortogonal()
+                Matriz2.crear(columnas,filas)
+                event.Traspuesta_1I(columnas,filas,Matriz1,Matriz2)
+                fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+                Report2.agregar_ultimo(fecha,"Transpuesta",nombre)
+                event.crear_grafica("Matriz_selecionada",Matriz1,filas,columnas)
+                event.crear_grafica("Matriz_operada",Matriz2,columnas,filas)
+                t = threading.Thread(target=event.ventana("ventana_matriz",f'Matriz seleccionada:  "{nombre}" ',filas,columnas,Matriz1,columnas,filas,Matriz2)) 
+                t.start()
+            except:
+                fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+                Report3.agregar_ultimo(fecha,"Error al realizar la traspuesta para una imagen","")
         elif valor==4:
-            Matriz2=Lista_ortogonal()
-            Matriz2.crear(filas,columnas)
-            event.Limpiar_1I(filas,columnas,Matriz1,Matriz2)
-            t = threading.Thread(target=event.ventana("ventana_matriz",f'Matriz seleccionada:  "{nombre}" ',filas,columnas,Matriz1,filas,columnas,Matriz2)) 
-            t.start()
+            try:
+                Matriz2=Lista_ortogonal()
+                Matriz2.crear(filas,columnas)
+                event.Limpiar_1I(filas,columnas,Matriz1,Matriz2)
+                fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+                Report2.agregar_ultimo(fecha,"Limpiar zona",nombre)
+                event.crear_grafica("Matriz_selecionada",Matriz1,filas,columnas)
+                event.crear_grafica("Matriz_operada",Matriz2,filas,columnas)
+                t = threading.Thread(target=event.ventana("ventana_matriz",f'Matriz seleccionada:  "{nombre}" ',filas,columnas,Matriz1,filas,columnas,Matriz2)) 
+                t.start()
+            except:
+                fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+                Report3.agregar_ultimo(fecha,"Error al realizar la operacion limpiar para una imagen","")    
         elif valor==5:
-            Matriz2=Lista_ortogonal()
-            Matriz2.crear(filas,columnas)
-            event.agregar_FH(filas,columnas,Matriz1,Matriz2)
-            t = threading.Thread(target=event.ventana("ventana_matriz",f'Matriz seleccionada:  "{nombre}" ',filas,columnas,Matriz1,filas,columnas,Matriz2)) 
-            t.start()
+            try:
+                Matriz2=Lista_ortogonal()
+                Matriz2.crear(filas,columnas)
+                event.agregar_FH(filas,columnas,Matriz1,Matriz2)
+                fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+                Report2.agregar_ultimo(fecha,"Agregar línea horizontal",nombre)
+                event.crear_grafica("Matriz_selecionada",Matriz1,filas,columnas)
+                event.crear_grafica("Matriz_operada",Matriz2,filas,columnas)
+                t = threading.Thread(target=event.ventana("ventana_matriz",f'Matriz seleccionada:  "{nombre}" ',filas,columnas,Matriz1,filas,columnas,Matriz2)) 
+                t.start()
+            except:
+                fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+                Report3.agregar_ultimo(fecha,"Error al realizar la operacion de agregar una fila horizontal para una imagen","")
         elif valor==6:
-            Matriz2=Lista_ortogonal()
-            Matriz2.crear(filas,columnas)
-            event.agregar_FV(filas,columnas,Matriz1,Matriz2)
-            t = threading.Thread(target=event.ventana("ventana_matriz",f'Matriz seleccionada:  "{nombre}" ',filas,columnas,Matriz1,filas,columnas,Matriz2)) 
-            t.start()
+            try:
+                Matriz2=Lista_ortogonal()
+                Matriz2.crear(filas,columnas)
+                event.agregar_FV(filas,columnas,Matriz1,Matriz2)
+                fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+                Report2.agregar_ultimo(fecha,"Agregar línea vertical",nombre)
+                event.crear_grafica("Matriz_selecionada",Matriz1,filas,columnas)
+                event.crear_grafica("Matriz_operada",Matriz2,filas,columnas)
+                t = threading.Thread(target=event.ventana("ventana_matriz",f'Matriz seleccionada:  "{nombre}" ',filas,columnas,Matriz1,filas,columnas,Matriz2)) 
+                t.start()
+            except:
+                fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+                Report3.agregar_ultimo(fecha,"Error al realizar la operacion de agregar una fila vertical para una imagen","")
         elif valor==7:
-            Matriz2=Lista_ortogonal()
-            Matriz2.crear(filas,columnas)
-            event.Rectangulo_1I(filas,columnas,Matriz1,Matriz2)
-            t = threading.Thread(target=event.ventana("ventana_matriz",f'Matriz seleccionada:  "{nombre}" ',filas,columnas,Matriz1,filas,columnas,Matriz2)) 
-            t.start()
+            try:
+                Matriz2=Lista_ortogonal()
+                Matriz2.crear(filas,columnas)
+                event.Rectangulo_1I(filas,columnas,Matriz1,Matriz2)
+                fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+                Report2.agregar_ultimo(fecha,"Agregar rectángulo",nombre)
+                event.crear_grafica("Matriz_selecionada",Matriz1,filas,columnas)
+                event.crear_grafica("Matriz_operada",Matriz2,filas,columnas)
+                t = threading.Thread(target=event.ventana("ventana_matriz",f'Matriz seleccionada:  "{nombre}" ',filas,columnas,Matriz1,filas,columnas,Matriz2)) 
+                t.start()
+            except:
+                fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+                Report3.agregar_ultimo(fecha,"Error al realizar la operacion de crear un rectangulo para una imagen","")
         elif valor==8:
-            Matriz2=Lista_ortogonal()
-            Matriz2.crear(filas,columnas)
-            event.Triangulo_1I(filas,columnas,Matriz1,Matriz2)
-            t = threading.Thread(target=event.ventana("ventana_matriz",f'Matriz seleccionada:  "{nombre}" ',filas,columnas,Matriz1,filas,columnas,Matriz2)) 
-            t.start()
-      
+            try:
+                Matriz2=Lista_ortogonal()
+                Matriz2.crear(filas,columnas)
+                event.Triangulo_1I(filas,columnas,Matriz1,Matriz2)
+                fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+                Report2.agregar_ultimo(fecha,"Agregar triángulo rectángulo",nombre)
+                event.crear_grafica("Matriz_selecionada",Matriz1,filas,columnas)
+                event.crear_grafica("Matriz_operada",Matriz2,filas,columnas)
+                t = threading.Thread(target=event.ventana("ventana_matriz",f'Matriz seleccionada:  "{nombre}" ',filas,columnas,Matriz1,filas,columnas,Matriz2)) 
+                t.start()
+            except:
+                fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+                Report3.agregar_ultimo(fecha,"Error al realizar la operacion de crear un triangulo para una imagen","")
 
     def ventana(self,nombre,es,filas,columnas,lista,filas2,columnas2,lista2):
         nombre=Tk()
         aplicacion1=form_new_matriz(nombre,es,filas,columnas,lista,filas2,columnas2,lista2)
         nombre.mainloop()
 
+    def union(self,Matriz1,Matriz2,Matriz3,filas,columnas):
+        for a in range(int(filas)):
+            for b in range(int(columnas)):
+                try:
+                    if Matriz1.getDato(b,a)=="*" or Matriz2.getDato(b,a)=="*":
+                        Matriz3.agregar(b,a,"*")
+                    else:
+                        Matriz3.agregar(b,a,"")
+                except:
+                    continue
+
+    def Interseccion(self,Matriz1,Matriz2,Matriz3,filas,columnas):
+        for a in range(int(filas)):
+            for b in range(int(columnas)):
+                try:
+                    if Matriz1.getDato(b,a)=="*" and Matriz2.getDato(b,a)=="*":
+                        Matriz3.agregar(b,a,"*")
+                    else:
+                        Matriz3.agregar(b,a,"")
+                except:
+                    continue
+
+    def Diferencia(self,Matriz1,Matriz2,Matriz3,filas,columnas):
+        for a in range(int(filas)):
+            for b in range(int(columnas)):
+                try:
+                    if Matriz1.getDato(b,a)=="*" and Matriz2.getDato(b,a)!="*":
+                        Matriz3.agregar(b,a,"*")
+                    else:
+                        Matriz3.agregar(b,a,"")
+                except:
+                    continue
     
+    def Diferencia_simetrica(self,Matriz1,Matriz2,Matriz3,filas,columnas):
+        for a in range(int(filas)):
+            for b in range(int(columnas)):
+                try:
+                    if (Matriz1.getDato(b,a)=="*" and Matriz2.getDato(b,a)!="*") or (Matriz1.getDato(b,a)!="*" and Matriz2.getDato(b,a)=="*"):
+                        Matriz3.agregar(b,a,"*")
+                    else:
+                        Matriz3.agregar(b,a,"")
+                except:
+                    continue
+
+
+    def cargar_matriz2(self,archivo,nombre1,nombre2,valor):
+        matrices=archivo.getElementsByTagName("matriz")
+        imagen=""
+        filas=""
+        columnas=""
+        imagen2=""
+        filas2=""
+        columnas2=""
+        for matriz in matrices:
+            if nombre1==matriz.getElementsByTagName("nombre")[0].firstChild.data:
+                filas=matriz.getElementsByTagName("filas")[0].firstChild.data
+                columnas=matriz.getElementsByTagName("columnas")[0].firstChild.data
+                imagen=matriz.getElementsByTagName("imagen")[0].firstChild.data
+                Matriz1=Lista_ortogonal()
+                Matriz1.crear(filas,columnas)
+                x=imagen.splitlines()
+                cont_fila=0
+                cont_columna=0
+                for y in x:
+                    z=y.strip()
+                    if z!="":
+                        #print(f"z:{z}")
+                        for a in z:
+                            #print(f"a:{a}")
+                            if a=="_" or a=="-":
+                                a=""
+                            Matriz1.agregar(cont_fila,cont_columna,a)
+                            cont_fila+=1      
+                    else:
+                        cont_columna-=1
+                    cont_fila=0
+                    cont_columna+=1
+            elif nombre2==matriz.getElementsByTagName("nombre")[0].firstChild.data:
+                filas2=matriz.getElementsByTagName("filas")[0].firstChild.data
+                columnas2=matriz.getElementsByTagName("columnas")[0].firstChild.data
+                imagen2=matriz.getElementsByTagName("imagen")[0].firstChild.data
+                Matriz2=Lista_ortogonal()
+                Matriz2.crear(filas2,columnas2)
+                q=imagen2.splitlines()
+                cont_fila=0
+                cont_columna=0
+                for u in q:
+                    m=u.strip()
+                    if m!="":
+                        #print(f"z:{z}")
+                        for d in m:
+                            #print(f"a:{a}")
+                            if d=="_" or d=="-":
+                                d=""
+                            Matriz2.agregar(cont_fila,cont_columna,d)
+                            cont_fila+=1      
+                    else:
+                        cont_columna-=1
+                    cont_fila=0
+                    cont_columna+=1
+        nc=0
+        nf=0
+        if columnas>columnas2 or columnas==columnas2:
+            nc=columnas
+        elif columnas<columnas2:
+            nc=columnas2
+
+        if filas>filas2 or filas==filas2:
+            nf=filas
+        elif filas<filas2:
+            nf=filas2
+             
+        if valor==1:
+            try:
+                Matriz3=Lista_ortogonal()
+                Matriz3.crear(nf,nc)
+                event.union(Matriz1,Matriz2,Matriz3,nf,nc)
+                fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+                nombres=f"{nombre1},{nombre2}"
+                Report2.agregar_ultimo(fecha,"Union",nombres)
+                event.crear_grafica("Matriz_selecionada_1",Matriz1,filas,columnas)
+                event.crear_grafica("Matriz_selecionada_2",Matriz2,filas2,columnas2)
+                event.crear_grafica("Matriz_operada",Matriz3,nf,nc)
+                t = threading.Thread(target=event.ventana2("ventana_matriz","Union",filas,columnas,Matriz1,filas2,columnas2,Matriz2,Matriz3,nf,nc)) 
+                t.start()
+            except:
+                fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+                Report3.agregar_ultimo(fecha,"No se pudo realizar la operacion union","")
+        elif valor==2:
+            try:
+                Matriz3=Lista_ortogonal()
+                Matriz3.crear(nf,nc)
+                event.Interseccion(Matriz1,Matriz2,Matriz3,nf,nc)
+                fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+                nombres=f"{nombre1},{nombre2}"
+                Report2.agregar_ultimo(fecha,"Interseccion",nombres)
+                event.crear_grafica("Matriz_selecionada_1",Matriz1,filas,columnas)
+                event.crear_grafica("Matriz_selecionada_2",Matriz2,filas2,columnas2)
+                event.crear_grafica("Matriz_operada",Matriz3,nf,nc)
+                t = threading.Thread(target=event.ventana2("ventana_matriz","Union",filas,columnas,Matriz1,filas2,columnas2,Matriz2,Matriz3,nf,nc)) 
+                t.start()
+            except:
+                fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+                Report3.agregar_ultimo(fecha,"No se pudo realizar la operacion interseccion","")
+        elif valor==3:
+            try:
+                Matriz3=Lista_ortogonal()
+                Matriz3.crear(nf,nc)
+                event.Diferencia(Matriz1,Matriz2,Matriz3,nf,nc)
+                fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+                nombres=f"{nombre1},{nombre2}"
+                Report2.agregar_ultimo(fecha,"Diferencia",nombres)
+                event.crear_grafica("Matriz_selecionada_1",Matriz1,filas,columnas)
+                event.crear_grafica("Matriz_selecionada_2",Matriz2,filas2,columnas2)
+                event.crear_grafica("Matriz_operada",Matriz3,nf,nc)
+                t = threading.Thread(target=event.ventana2("ventana_matriz","Union",filas,columnas,Matriz1,filas2,columnas2,Matriz2,Matriz3,nf,nc)) 
+                t.start()
+            except:
+                fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+                Report3.agregar_ultimo(fecha,"No se pudo realizar la operacion 'Diferencia'","")
+        elif valor==4:
+            try:
+                Matriz3=Lista_ortogonal()
+                Matriz3.crear(nf,nc)
+                event.Diferencia_simetrica(Matriz1,Matriz2,Matriz3,nf,nc)
+                fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+                nombres=f"{nombre1},{nombre2}"
+                Report2.agregar_ultimo(fecha,"Diferencia_simetrica",nombres)
+                event.crear_grafica("Matriz_selecionada_1",Matriz1,filas,columnas)
+                event.crear_grafica("Matriz_selecionada_2",Matriz2,filas2,columnas2)
+                event.crear_grafica("Matriz_operada",Matriz3,nf,nc)
+                t = threading.Thread(target=event.ventana2("ventana_matriz","Union",filas,columnas,Matriz1,filas2,columnas2,Matriz2,Matriz3,nf,nc)) 
+                t.start()
+            except:
+                fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+                Report3.agregar_ultimo(fecha,"No se pudo realizar la operacion 'Diferencia Simetrica'","")
+        
+                
+    def ventana2(self,nombre,es,filas,columnas,lista,filas2,columnas2,lista2,lista3,filas3,columnas3):
+        nombre=Tk()
+        aplicacion2=form_new_matriz2(nombre,es,filas,columnas,lista,filas2,columnas2,lista2,lista3,filas3,columnas3)
+        nombre.mainloop()
+
+
+class Nodo_C(object):
+    def __init__(self,fecha,nombre,llenos,vacios):
+        self.fecha =fecha 
+        self.nombre=nombre
+        self.llenos=llenos
+        self.vacios=vacios
+        self.siguiente = None
+
+class Lista_Circular(object):
+    def __init__(self):
+        self.cabeza=None
+    
+    def esta_vacia(self):
+        if self.cabeza is None:
+            return True
+        else:
+            return False
+
+    def tamaño(self):
+        temp=self.cabeza
+        cont=0
+        while temp is not None:
+            cont+=1
+            if temp.siguiente == self.cabeza:
+                break
+            else:
+                temp=temp.siguiente
+        #print(cont)
+        return cont
+    
+    def agregar_ultimo(self,fecha,nombre,llenos,vacios):
+        nodo=Nodo_C(fecha,nombre,llenos,vacios)
+        if self.esta_vacia():
+            self.cabeza = nodo
+            nodo.siguiente=self.cabeza
+        else:
+            temp=self.cabeza
+            while temp.siguiente is not self.cabeza:
+                temp=temp.siguiente
+            temp.siguiente=nodo
+            nodo.siguiente =self.cabeza
+
+    def recorrer(self):
+        if self.esta_vacia():
+            return print("Esta vacia")
+        temp=self.cabeza
+        print(temp.fecha)
+        print(temp.nombre)
+        print(temp.llenos)
+        print(temp.vacios)
+        while temp.siguiente is not self.cabeza:
+            temp=temp.siguiente
+            print(temp.fecha)
+            print(temp.nombre)
+            print(temp.llenos)
+            print(temp.vacios)
+            
+
+
+    def buscar(self,posicion,cual):
+        if self.esta_vacia():
+            return("la lista esta vacia")
+        if posicion==0:
+            if cual==0:
+                return self.cabeza.fecha
+            elif cual==1:
+                return self.cabeza.nombre
+            elif cual==2:
+                return self.cabeza.llenos
+            elif cual==3:
+                return self.cabeza.vacios
+        elif posicion >0:
+            temp=self.cabeza
+            for a in range(int(posicion)):
+                temp=temp.siguiente
+            if cual==0:
+                return temp.fecha
+            elif cual==1:
+                return temp.nombre
+            elif cual==2:
+                return temp.llenos
+            elif cual==3:
+                return temp.vacios
 
 
 class nodo():
@@ -389,7 +944,7 @@ class Lista_ortogonal():
         temp_derecha=nodo(None)
         for a in range(int(fila)):
             for b in range(int(columna)):
-                nuevo = nodo(f"*{a+1},{b+1}")
+                nuevo = nodo(f"{a+1},{b+1}")
                 #print(nuevo.dato)
                 nuevo.abajo=None
                 nuevo.derecha=None
@@ -451,7 +1006,6 @@ class Lista_ortogonal():
         else:
             print("La lista esta vacia ")
 
-    
 
     def recorrer(self):
         if self.cabeza is not None:
@@ -465,8 +1019,88 @@ class Lista_ortogonal():
         else:
             print("La lista esta vacia")
 
+class Nodo_C2(object):
+    def __init__(self,fecha,operacion,nombre):
+        self.fecha =fecha 
+        self.nombre=nombre
+        self.operacion=operacion
+        self.siguiente = None
+
+class Lista_Circular2(object):
+    def __init__(self):
+        self.cabeza=None
+    
+    def esta_vacia(self):
+        if self.cabeza is None:
+            return True
+        else:
+            return False
+
+    def tamaño(self):
+        temp=self.cabeza
+        cont=0
+        while temp is not None:
+            cont+=1
+            if temp.siguiente == self.cabeza:
+                break
+            else:
+                temp=temp.siguiente
+        #print(cont)
+        return cont
+    
+    def agregar_ultimo(self,fecha,operacion,nombre):
+        nodo=Nodo_C2(fecha,operacion,nombre)
+        if self.esta_vacia():
+            self.cabeza = nodo
+            nodo.siguiente=self.cabeza
+        else:
+            temp=self.cabeza
+            while temp.siguiente is not self.cabeza:
+                temp=temp.siguiente
+            temp.siguiente=nodo
+            nodo.siguiente =self.cabeza
+
+    def recorrer(self):
+        if self.esta_vacia():
+            return print("Esta vacia")
+        temp=self.cabeza
+        print(temp.fecha)
+        print(temp.nombre)
+        print(temp.operacion)
+        while temp.siguiente is not self.cabeza:
+            temp=temp.siguiente
+            print(temp.fecha)
+            print(temp.nombre)
+            print(temp.operacion)  
+
+
+    def buscar(self,posicion,cual):
+        if self.esta_vacia():
+            return("la lista esta vacia")
+        if posicion==0:
+            if cual==0:
+                return self.cabeza.fecha
+            elif cual==1:
+                return self.cabeza.nombre
+            elif cual==2:
+                return self.cabeza.operacion
+        elif posicion >0:
+            temp=self.cabeza
+            for a in range(int(posicion)):
+                temp=temp.siguiente
+            if cual==0:
+                return temp.fecha
+            elif cual==1:
+                return temp.nombre
+            elif cual==2:
+                return temp.operacion
+
+
 
 event=Eventos()
+Report=Lista_Circular()
+Report2=Lista_Circular2()
+Report3=Lista_Circular2()
 
 
 if __name__=='__main__':

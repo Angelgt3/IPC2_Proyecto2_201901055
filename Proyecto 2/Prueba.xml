@@ -12,6 +12,17 @@
         </imagen>
     </matriz>
     <matriz>
+        <nombre>Matriz6</nombre>
+        <filas>4</filas>
+        <columnas>5</columnas>
+        <imagen>
+        ****_
+        *___*
+        __**_
+        *__**
+        </imagen>
+    </matriz>
+    <matriz>
         <nombre>Matriz2</nombre>
         <filas>7</filas>
         <columnas>2</columnas>
