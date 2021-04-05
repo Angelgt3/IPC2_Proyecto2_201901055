@@ -251,7 +251,7 @@ class Eventos:
     
     def doc(self):
         try:
-            nombreArchivo = 'C:/Users/angge/OneDrive/Documentos/GitHub/IPC2_Proyecto2_201901055/Documentacion/[IPC2]Proyecto_2.pdf'
+            nombreArchivo = 'C:/Users/angge/OneDrive/Documentos/GitHub/IPC2_Proyecto2_201901055/Documentacion/Documentacion_IPC2_Proyecto2.pdf'
             webbrowser.open_new_tab(nombreArchivo)
         except:
             fecha=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
